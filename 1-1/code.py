@@ -10,4 +10,4 @@ with open(sys.argv[1]) as data:
 			inc += 1
 		old = new
 
-print(f"Admiral Kowalsky, the route {inc-1=} is clear!")
+print(f"Admiral Kowalsky, the route {inc-1} is clear!")
