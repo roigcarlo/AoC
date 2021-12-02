@@ -25,4 +25,4 @@ with open(sys.argv[1]) as data:
 
 		old = new
 
-print(f"Turn all to the left!, we will go direction {inc-1=}!")
+print(f"Turn all to the left!, we will go direction {inc-1}!")
