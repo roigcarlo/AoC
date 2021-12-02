@@ -1,19 +1,19 @@
 import sys
 
-x, z, a = 0,0,0
+x, z, a = 0, 0, 0
 
 with open(sys.argv[1]) as data:
     for l in data:
-        direction = l.strip().split(" ")
+        direction = [type(val) for type,val in zip([str, int],l.strip().split(" "))]
 
         match direction:
-            case ["forward", value]:
-                x += int(value)
-                z += int(value) * a
-            case ["up", value]:
-                a -= int(value)
-            case ["down", value]:
-                a += int(value)
+            case ["forward", val]:
+                x += val
+                z += val * a
+            case ["up", val]:
+                a -= val
+            case ["down", val]:
+                a += val
             case _:
                 print(f"Order not acknowledge: {direction=}")
 
