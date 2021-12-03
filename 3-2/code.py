@@ -1,21 +1,11 @@
 import sys
 import numpy as np
 
-m = np.genfromtxt(sys.argv[1], delimiter=1, dtype='int').T
+def do(l,a,b,o):
+    for i in range(o.shape[0]):
+        if [o:=o[:,o[i,:]==l(o,a,b)[i]]] and o.shape[1]==1:
+            return int(''.join([str(x) for x in o.T.reshape(o.shape[0],)]), 2)
 
-g,o = [(0,1)[np.count_nonzero(r) > m.shape[1]/2] for r in m],m
-e,c = [(1,0)[np.count_nonzero(r) > m.shape[1]/2] for r in m],m
-
-for i in range(len(g)):
-    o = o[:, o[i,:]==g[i]]
-    g = [(0,1)[np.count_nonzero(r) >= o.shape[1]/2] for r in o]
-    if o.shape[1] == 1:
-        o2  = int(''.join([str(x) for x in o.T.reshape(o.shape[0],)]), 2)
-
-for i in range(len(g)):
-    c = c[:, c[i,:]==e[i]]
-    e = [(1,0)[np.count_nonzero(r) >= c.shape[1]/2] for r in c]
-    if c.shape[1] == 1:
-        co2 = int(''.join([str(x) for x in c.T.reshape(c.shape[0],)]), 2)
+o2,co2 = map(lambda a: do(*a),[(l:=lambda m,a,b: [(a,b)[np.count_nonzero(r) >= m.shape[1]/2] for r in m],0,1,m:=np.genfromtxt(sys.argv[1], delimiter=1, dtype='int').T), (l,1,0,m)])
 
 print(f"Kowalsky, life support status!: {o2*co2}")
