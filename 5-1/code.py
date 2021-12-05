@@ -5,8 +5,7 @@ import numpy as np
 with open(sys.argv[1]) as data:
 
     vents = np.array(re.findall('(\d+),(\d+) -> (\d+),(\d+)', data.read()), dtype='int')
-    end_of_the_world = np.max(vents) + 1
-    field = np.zeros(shape=(end_of_the_world, end_of_the_world))
+    field = np.zeros(shape=(np.max(vents) + 1, np.max(vents) + 1))
 
     for v in vents:
         if v[0] == v[2] or  v[1] == v[3]:
