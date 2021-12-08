@@ -11,12 +11,6 @@ if __name__ == '__main__':
 
             s = [[set([c for c in word]) for word in encode if len(word) == r] for r in range(3,8)]
 
-            # s3 = [set([c for c in word]) for word in encode if len(word) == 3]
-            # s4 = [set([c for c in word]) for word in encode if len(word) == 4]
-            # s5 = [set([c for c in word]) for word in encode if len(word) == 5]
-            # s6 = [set([c for c in word]) for word in encode if len(word) == 6]
-            # s7 = [set([c for c in word]) for word in encode if len(word) == 7]
-
             i5 = s[2][0].intersection(*s[2][1:])
             i6 = s[3][0].intersection(*s[3][1:])
 
