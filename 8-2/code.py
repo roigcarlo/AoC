@@ -23,4 +23,4 @@ if __name__ == '__main__':
             digits += int(''.join([nixie_map[len(d)](d) for d in decode]))
                 
     tb = time.perf_counter()
-    print("Kowlasky, today it's enough solving this:", digits, (tb-ta)*1000)
+    print("Kowalsky, today it's enough solving this:", digits, (tb-ta)*1000)
