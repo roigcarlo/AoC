@@ -9,44 +9,24 @@ if __name__ == '__main__':
         for l in data:
             encode, decode = map(lambda x: re.findall('(\w+)(?:\s|$)', x), l.split('|'))
 
-            s3 = [set([c for c in word]) for word in encode if len(word) == 3]
-            s4 = [set([c for c in word]) for word in encode if len(word) == 4]
-            s5 = [set([c for c in word]) for word in encode if len(word) == 5]
-            s6 = [set([c for c in word]) for word in encode if len(word) == 6]
-            s7 = [set([c for c in word]) for word in encode if len(word) == 7]
+            s = [[set([c for c in word]) for word in encode if len(word) == r] for r in range(3,8)]
 
-            i5 = s5[0].intersection(*s5[1:])
-            i6 = s6[0].intersection(*s6[1:])
+            # s3 = [set([c for c in word]) for word in encode if len(word) == 3]
+            # s4 = [set([c for c in word]) for word in encode if len(word) == 4]
+            # s5 = [set([c for c in word]) for word in encode if len(word) == 5]
+            # s6 = [set([c for c in word]) for word in encode if len(word) == 6]
+            # s7 = [set([c for c in word]) for word in encode if len(word) == 7]
 
-            # 4:
-            segment = s7[0] - i5 - i6 - s3[0]
-            n4 = segment.pop()
+            i5 = s[2][0].intersection(*s[2][1:])
+            i6 = s[3][0].intersection(*s[3][1:])
 
-            # 2:
-            segment = s4[0] - i5 - i6
-            n2 = segment.pop()
+            n4 = set(s[4][0] - i5 - i6 - s[0][0]).pop()
+            n2 = set(s[1][0] - i5 - i6).pop()
+            n5 = set(s[1][0].intersection(i6,s[0][0])).pop()
 
-            # 5:
-            segment = s4[0].intersection(i6,s3[0])
-            n5 = segment.pop()
+            nixie_map = {2:(lambda x:'1'), 3:(lambda x:'7'), 4:(lambda x:'4'), 7:(lambda x:'8'), 5:(lambda x:('5',('2','3')[n5 in x])[n2 in x]), 6:(lambda x:('6',('9','0')[n4 in x])[n2 in x])}
 
-            number = ''
-            for d in decode:
-                match len(d):
-                    case 2: number += '1'
-                    case 3: number += '7'
-                    case 4: number += '4'
-                    case 5:
-                        if   n2 not in d: number += '5'
-                        elif n5 not in d: number += '2'
-                        else:             number += '3'
-                    case 6:
-                        if   n2 not in d: number += '6'
-                        elif n4 not in d: number += '9'
-                        else:             number += '0'
-                    case 7: number += '8'
-            
-            digits += int(number)
+            digits += int(''.join([nixie_map[len(d)](d) for d in decode]))
                 
     tb = time.perf_counter()
     print("Kowlasky, today it's enough solving this:", digits, (tb-ta)*1000)
