@@ -1,19 +1,5 @@
 import sys
+import regex
+import itertools
 
-langs = {'(':')','[':']' ,'{':'}' ,'<':'>'}
-score = {')':3  ,']':57  ,'}':1197,'>':25137}
-
-def perl(l):
-    stack = []
-    for oc in l:
-        if oc in langs.keys():
-            stack += oc
-        if oc in langs.values():
-            cc = stack.pop()
-            if oc != langs[cc]:
-                return score[oc]
-    return 0
-
-with open(sys.argv[1]) as data:
-    print("Kowalsky, what a shame not to use recursive regex to solve this!:", sum([perl(l) for l in data]))
-            
+print("Kowalsky, let's do some flexing!:", sum(list(itertools.chain(*list(itertools.chain(*[[list(filter(lambda x: x != 0,[(0,{')':3  ,']':57  ,'}':1197,'>':25137}[s[-1]])[{'(':')','[':']' ,'{':'}' ,'<':'>'}[s[0]]!=s[-1]] for s in m.captures(1)])) for m in regex.finditer('((?:\(|\[|\{|<)(?:(?R)*)(?:\)|\]|\}|>))', l.strip())] for l in open(sys.argv[1])]))))))
