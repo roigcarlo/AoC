@@ -14,7 +14,8 @@ def solve_problem(generations):
     return family
 
 if __name__ == "__main__":
-    g = int(sys.argv[2]) + 7
+    epochs = int(sys.argv[2]) if len(sys.argv) == 3 else 250
+    epochs += 7
     pool = solve_problem(g)
     with open(sys.argv[1]) as data:
         pesesitos = np.array(re.findall('\d', data.read()), dtype='int')
