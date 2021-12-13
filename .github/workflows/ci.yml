@@ -3,13 +3,15 @@ on: push
 jobs:
   Submarine-2021:
     runs-on: ubuntu-latest
+
     container: 
       image: python:bullseye
+
     steps:
     - name: Prepare Fleet
       shell: bash
       run: python3.10 -m pip install numpy regex
-    steps:
+
     - name: Run Submarine
       shell: bash
       run: |
