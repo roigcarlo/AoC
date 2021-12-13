@@ -1,7 +1,7 @@
 name: Advent Of Ci
 on: push
 jobs:
-  Submarine 2021:
+  Submarine-2021:
     runs-on: ubuntu-latest
     container: 
       image: python-bullseye
