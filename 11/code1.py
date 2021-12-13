@@ -8,7 +8,7 @@ much_light[1:light.shape[0]+1,1:light.shape[1]+1] = light
 
 total = 0
 
-for s in range(int(sys.argv[2])):
+for s in range(100):
     much_light += 1
     while [flashy := np.where(much_light>9)] and len(flashy[0]):
         for i,j in zip(flashy[0], flashy[1]):

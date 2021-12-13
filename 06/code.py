@@ -14,8 +14,9 @@ def solve_problem(generations):
     return family
 
 if __name__ == "__main__":
-    g = int(sys.argv[2]) + 7
-    pool = solve_problem(g)
+    epochs = int(sys.argv[2]) if len(sys.argv) == 3 else 250
+    epochs += 7
+    pool = solve_problem(epochs)
     with open(sys.argv[1]) as data:
         pesesitos = np.array(re.findall('\d', data.read()), dtype='int')
-        print("Kowalsky, fuck generative functions and their closed forms:", np.sum([pool[g-n-1] for n in pesesitos]) + len(pesesitos))
+        print("Kowalsky, fuck generative functions and their closed forms:", np.sum([pool[epochs-n-1] for n in pesesitos]) + len(pesesitos))
