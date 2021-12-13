@@ -1,0 +1,25 @@
+name: Advent Of Ci
+on: push
+jobs:
+  Submarine-2021:
+    runs-on: ubuntu-latest
+
+    container: 
+      image: python:bullseye
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare Fleet
+      shell: bash
+      run: python3.10 -m pip install numpy regex
+
+    - name: Run Submarine
+      shell: bash
+      run: |
+        for d in ${GITHUB_WORKSPACE}/*/ ; do
+          echo "Running day $(basename ${d})"
+          for p in ${d}code* ; do
+              python3.10 ${p} ${d}/data
+          done
+          echo
+        done
