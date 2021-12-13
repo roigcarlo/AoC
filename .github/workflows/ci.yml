@@ -4,7 +4,7 @@ jobs:
   Submarine-2021:
     runs-on: ubuntu-latest
     container: 
-      image: python-bullseye
+      image: python:bullseye
     steps:
     - name: Run Submarine
       run: |
