@@ -14,10 +14,4 @@ jobs:
 
     - name: Run Submarine
       shell: bash
-      run: |
-        for d in ${GITHUB_WORKSPACE}/*/ ; do
-          for p in ${d}code* ; do
-              python3.10 ${p} ${d}/data
-          done
-          echo "\n"
-        done
+      run: ${GITHUB_WORKSPACE}/.github/workflows/configure.sh
