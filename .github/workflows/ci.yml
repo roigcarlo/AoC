@@ -1,14 +1,15 @@
-name: AdventOfCi
+name: Advent Of Ci
 on: push
 jobs:
-  aoc:
+  Submarine 2021:
     runs-on: ubuntu-latest
-    container: alpine
+    container: 
+      image: python-bullseye
     steps:
     - name: Run Submarine
       run: |
         for d in */ ; do
           for p in ${d}code* ; do
-              python3 ${p} ${d}/data
+              python3.10 ${p} ${d}/data
           done
         done
