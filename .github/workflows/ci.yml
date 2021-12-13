@@ -6,10 +6,16 @@ jobs:
     container: 
       image: python:bullseye
     steps:
+    - name: Prepare Fleet
+      shell: bash
+      run: python3.10 -m pip install numpy regex
+    steps:
     - name: Run Submarine
+      shell: bash
       run: |
         for d in ${GITHUB_WORKSPACE}/*/ ; do
           for p in ${d}code* ; do
               python3.10 ${p} ${d}/data
           done
+          echo "\n"
         done
