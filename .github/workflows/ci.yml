@@ -1,0 +1,14 @@
+name: AdventOfCi
+on: push
+jobs:
+  aoc:
+    runs-on: ubuntu-latest
+    container: alpine
+    steps:
+    - name: Run Submarine
+      run: |
+        for d in */ ; do
+          for p in ${d}code* ; do
+              python3 ${p} ${d}/data
+          done
+        done
