@@ -1,7 +1,19 @@
-# Hydrothermal Venture #
+# Lanternfish #
 
-## Featuring... Regex! ##
+## Featuring... Generative functions! ##
 
-Since I don't have any resemblance of regularity or stability in my life I am naturally fascinated by regular expressions. So stable and usefull.
+Ok this one is still under development. 
 
-This is the first time they appear but I will use them a lot for sure. 
+I remember from my days at the campus that there was that thing called Generative function that basically could be use to convert a recursive expression into a closed expression.
+
+Since the recurrence of this problem can be calculated as:
+
+```
+f(x) = f(x-7) + f(x-9) + 1
+```
+
+It should technically be possible to calculate this directly.
+
+*References*:
+
+[Generative Functions](https://en.wikipedia.org/wiki/Generating_function)
