@@ -6,7 +6,9 @@ My mom always said that crabs go backwards. They go sideways, but nevermind.
 
 Since I like my mom's version, I turned the code upside down!:
 
-![](craby.png)
+<p align="center">
+  <img src=craby.png />
+</p>
 
 See? if you flip it makes sense and all.
 
