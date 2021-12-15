@@ -12,6 +12,4 @@ for i in range(1, m.shape[0]):
     for j in range(1, m.shape[1]):
         m[i,j] = m[i,j] + min(m[i-1,j], m[i,j-1])
 
-print(m)
-
 print("Kowalsky, mind the ceiling!:", m[-1,-1]-c)
