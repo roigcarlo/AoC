@@ -7,6 +7,10 @@ If you are reading this, you may have notice how lazy I am some days. Well today
 Today's puzzle has been mostly coded by [Github's Copilot](https://copilot.github.com/)
 which is a tool powered by OpenAI's GPT3 that assist programmers in the creation of codes.
 
+<p align="center">
+  <img width=50% src="https://github.githubassets.com/images/icons/copilot/cp-head-square.png" />
+</p>
+
 All functions in the puzzles today have been written as textual description and sligtly tweaked (the lines with comments have been rewritten or changed by me).
 
 The main code is written mostly by me:
@@ -28,7 +32,8 @@ if __name__ == '__main__':
 Then for example I declared a function stating:
 
 ```Python
-''' A function that takes the coordinates of a square and an initial velocity. Then the function does an infinite loop applying this rules:
+''' A function that takes the coordinates of a square and an initial velocity. Then the function 
+    does an infinite loop applying this rules:
 
     The probe's x position increases by its x velocity.
     The probe's y position increases by its y velocity.
@@ -37,7 +42,7 @@ Then for example I declared a function stating:
     If the probe is beyond the square, sets the maxmium y position to minus one and breaks the loop.
     If the probe is inside the square, breaks the loop
 
-finally, the function returns the maximum y value.
+Finally, the function returns the maximum y value.
 '''
 def calculate_max_y_and_update_velocity(x1, y1, x2, y2, vx, vy):
 ```
@@ -71,8 +76,10 @@ function calculate_max_y_and_update_velocity in the range of x velocities [-x1, 
 def calculate_max_y(x1, y1, x2, y2):
     ax1, ay1, ax2, ay2 = turn_into_positive_numbers(x1, y1, x2, y2)
     max_y = -1
-    for x in range(0, max(ax1+1,ax2+1)):                                                # I tunned the ranges so it converges faster.
-        for y in range(-max(ay1+1,ay2+1,ax1+1,ax2+1), max(ay1+1,ay2+1,ax1+1,ax2+1)):    # I tunned the ranges so it converges faster.
+    # I tunned the ranges so it converges faster.
+    for x in range(0, max(ax1+1,ax2+1)): 
+        # I tunned the ranges so it converges faster.                                               
+        for y in range(-max(ay1+1,ay2+1,ax1+1,ax2+1), max(ay1+1,ay2+1,ax1+1,ax2+1)):
             max_y = max(max_y, calculate_max_y_and_update_velocity(x1, y1, x2, y2, x, y))
     return max_y
 ```
