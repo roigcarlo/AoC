@@ -5,7 +5,7 @@
 If you are reading this, you may have notice how lazy I am some days. Well today I am *SPECIALLY* lazy, so I did not write any code (well some of it but very few)
 
 Today's puzzle has been mostly coded by [Github's Copilot](https://copilot.github.com/)
-which is a tool powered by OpenAI's GPT3 that assist programmers in the creation of codes.
+which is a tool powered by OpenAI's GPT3 that assists programmers in the creation of codes.
 
 <p align="center">
   <img src="https://github.githubassets.com/images/icons/copilot/cp-head-square.png" width="150" height="150" />
@@ -67,7 +67,7 @@ return max_y
 ```
 
 Not all the codes were perfect and some of them would have been very dificult to 
-descrive. For example the ranges in this function were ultimately defined by me
+describe. For example the ranges in this function were ultimately defined by me
 
 ```Python
 ''' A function that given a square calculates which is the pair of x,y velocities maximizes the output of the 
@@ -99,6 +99,8 @@ def calculate_how_many_fall_inside(x1, y1, x2, y2):
     return count
 ```
 
-My conclusions after using it. It is more usefull that it may seem at first glance, and by fare much more usefull than it was some months ago!
+## Conclusions:
+
+It is more usefull that it may seem at first glance and by fare much more usefull than it was some months ago!
 
 Disclaimer: This README.md has been written by a human. Maybe.
