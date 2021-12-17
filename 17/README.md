@@ -8,7 +8,7 @@ Today's puzzle has been mostly coded by [Github's Copilot](https://copilot.githu
 which is a tool powered by OpenAI's GPT3 that assist programmers in the creation of codes.
 
 <p align="center">
-  <img style="max-width:50%" src="https://github.githubassets.com/images/icons/copilot/cp-head-square.png" />
+  <img src="https://github.githubassets.com/images/icons/copilot/cp-head-square.png" width="150" height="150" />
 </p>
 
 All functions in the puzzles today have been written as textual description and sligtly tweaked (the lines with comments have been rewritten or changed by me).
