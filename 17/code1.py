@@ -1,5 +1,5 @@
-import sys                                          # I wrote the import
-import re                                           # I wrote the import
+import sys  # I wrote the import
+import re   # I wrote the import
 
 ''' A function that given the coordinates of a square and a point with coordinates x and y decides if x and y falls inside the square '''
 def is_inside(x, y, x1, y1, x2, y2):
