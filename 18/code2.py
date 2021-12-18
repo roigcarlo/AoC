@@ -69,7 +69,6 @@ with open(sys.argv[1]) as data:
     pairs = itertools.combinations(n,2)
 
     for p in pairs:
-        n = f"[{p[0]},{p[1]}]"
         k = True
         max_eval = max(max_eval, eval_number(f"[{p[0]},{p[1]}]"))
         max_eval = max(max_eval, eval_number(f"[{p[1]},{p[0]}]"))
