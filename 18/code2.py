@@ -1,30 +1,25 @@
-import sys
 import re
+import sys
 import math
+import time
 import itertools
 
-
 def tree_add(a):
-    if isinstance(a, list):
-        return 3 * tree_add(a[0]) + 2 * tree_add(a[1])
-    else:
-        return a 
+    return 3 * tree_add(a[0]) + 2 * tree_add(a[1]) if isinstance(a, list) else a
 
 def sub_l(n,l):
     l = l[::-1]
-    m = re.search('\d\d*', l)
-    if m:
+    if m:=re.search(r'\d\d*', l):
         chain = m.group(0) 
         rep = str(int(chain[::-1])+int(n))[::-1]
-        return re.sub('(\d\d*)', rep, l, 1)[::-1]
+        return re.sub(r'\d\d*', rep, l, 1)[::-1]
     return l[::-1]
 
 def sub_r(n,l):
-    m = re.search('\d\d*', l)
-    if m:
+    if m:=re.search(r'\d\d*', l):
         chain = m.group(0) 
         rep = str(int(chain)+int(n))
-        return re.sub('(\d\d*)', rep, l, 1)
+        return re.sub(r'\d\d*', rep, l, 1)
     return l
 
 def explode(l):
@@ -33,45 +28,39 @@ def explode(l):
         if l[i] == '[': count += 1
         if l[i] == ']': count -= 1
         if count > 4:
-            break
-    if count > 4:
-        m = re.search('\d\d*,\d\d*', l[i:])
-        l_n, r_n = m.group(0).split(',')
-        l_l, r_l = l[:i], l[i+len(m.group(0))+2:]
-        ls = sub_l(l_n, l_l)
-        rs = sub_r(r_n, r_l)
-        return True, ls + str(0) + rs
+            m = re.search(r'\d\d*,\d\d*', l[i:])
+            l_n, r_n = m.group(0).split(',')
+            l_l, r_l = l[:i], l[i+len(m.group(0))+2:]
+            ls = sub_l(l_n, l_l)
+            rs = sub_r(r_n, r_l)
+            return True, f"{ls}0{rs}"
     return False, l
 
 def split(l):
-    m = re.search('\d\d+', l)
-    if m:
-        rep = f"[{math.floor(int(m.group(0))/2)},{math.ceil(int(m.group(0))/2)}]"
-        return True, re.sub('(\d\d+)', rep, l, 1)
+    if m:=re.search(r'\d\d+', l):
+        div = int(m.group(0))/2
+        rep = f"[{math.floor(div)},{math.ceil(div)}]"
+        return True, re.sub(r'(\d\d+)', rep, l, 1)
     return False, l
 
 def eval_number(n):
     k = True
-    while k:
-        k = False
-        if not k: 
-            k, n = explode(n)
-        if not k: 
-            k, n = split(n)
+    while k and [k := False]:
+        if not k: k, n = explode(n)
+        if not k: k, n = split(n)
     return tree_add(eval(n))
 
+ta = time.perf_counter()
 with open(sys.argv[1]) as data:
-    n = []
     max_eval = 0
-    for l in data:
-        n.append(l.strip())
 
+    n = [l.strip() for l in data.readlines()]
     pairs = itertools.combinations(n,2)
 
     for p in pairs:
-        k = True
         max_eval = max(max_eval, eval_number(f"[{p[0]},{p[1]}]"))
         max_eval = max(max_eval, eval_number(f"[{p[1]},{p[0]}]"))
      
-    print("Kowalsky, that was.. hard?:", max_eval)
+tb = time.perf_counter()
+print(f"Kowalsky, that was.. hard?: {max_eval} {(tb-ta):0.2f}")
         
