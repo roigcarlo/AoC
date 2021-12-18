@@ -1,5 +1,6 @@
-import sys
 import re
+import sys
+import json
 import math
 
 
@@ -62,7 +63,7 @@ with open(sys.argv[1]) as data:
             if not k: 
                 k, n = split(n)
 
-    tree = tree_add(eval(n))
+    tree = tree_add(json.loads(n))
      
     print("Kowalsky, that was.. hard?:", tree)
         

@@ -2,6 +2,7 @@ import re
 import sys
 import math
 import time
+import json
 import itertools
 
 def tree_add(a):
@@ -48,7 +49,7 @@ def eval_number(n):
     while k and [k := False]:
         if not k: k, n = explode(n)
         if not k: k, n = split(n)
-    return tree_add(eval(n))
+    return tree_add(json.loads(n))
 
 ta = time.perf_counter()
 with open(sys.argv[1]) as data:
