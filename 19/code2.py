@@ -98,6 +98,7 @@ with open(sys.argv[1]) as data:
         if len(m) >= 66:
             scanner_pairs_to_check.append((pair[0], pair[1]))
 
+    # Find the translations
     for pair in scanner_pairs_to_check:
         match_pairs = []
         match_pairs_t = []
@@ -114,18 +115,21 @@ with open(sys.argv[1]) as data:
                 match_pairs_t = [b, a]
                 rot = find_rot(match_pairs)
                 ret = find_rot(match_pairs_t)
+                key_rot = (rot[2][0],rot[2][1],rot[2][2])
+                key_ret = (ret[2][0],ret[2][1],ret[2][2])
                 if rot is not None:
-                    key = (rot[2][0],rot[2][1],rot[2][2])
-                    if key not in straight_pair:
-                        straight_pair[key] = 0
-                    straight_pair[key] += 1
-                    straight_pair_data[key] = rot
+                    if key_rot not in straight_pair:
+                        straight_pair[key_rot] = 0
+                    straight_pair[key_rot] += 1
+                    straight_pair_data[key_rot] = rot
                 if ret is not None:
-                    key = (ret[2][0],ret[2][1],ret[2][2])
-                    if key not in straight_pair_t:
-                        straight_pair_t[key] = 0
-                    straight_pair_t[key] += 1
-                    straight_pair_data_t[key] = ret
+                    if key_ret not in straight_pair_t:
+                        straight_pair_t[key_ret] = 0
+                    straight_pair_t[key_ret] += 1
+                    straight_pair_data_t[key_ret] = ret
+                if straight_pair[key_rot] > 1 and straight_pair_t[key_ret] > 1:
+                    break
+        
         forward_match = max(straight_pair, key=straight_pair.get)
         backward_match = max(straight_pair_t, key=straight_pair_t.get)
         scanners_frame[pair] = straight_pair_data[forward_match]
@@ -134,40 +138,33 @@ with open(sys.argv[1]) as data:
     # Find a chain that allows to move from one frame to all the others:
     chain = find_chain(scanner_id, scanners_frame)
 
-    # apply the transforms
     sudo_frame = chain[0]
 
     non_converted_scanners = list(range(scanner_id+1))
     yes_converted_scanners = []
-    debug_list = {chain[0]:([1,1,1], [0,1,2], [0,0,0], chain[0])}
+    next_chain = {chain[0]:chain[0]}
     for i in chain:
         for pair in scanners_frame:
-            if pair not in yes_converted_scanners and pair[0] in debug_list.keys() and pair[0] == i and pair[1] not in debug_list.keys():
-                t = debug_list[pair[0]]
+            if pair not in yes_converted_scanners and pair[0] in next_chain.keys() and pair[0] == i and pair[1] not in next_chain.keys():
+                t = next_chain[pair[0]]
                 d = scanners_frame[pair]
-                debug_list[pair[1]] = (
-                    [d[0][c]*t[0][c]  for c in range(3)],
-                    [t[1][d[1][c]]    for c in range(3)],
-                    [d[2][t[1][c]]*t[0][c]+t[2][c] for c in range(3)],
-                    pair[0]
-                )
+                next_chain[pair[1]] = pair[0]
                 yes_converted_scanners.append(pair)
 
     points_manhattan = [[0,0,0]]
 
+    # Calculate the relative location from any frame
     for s in chain[1:]:
-        old_point = scanners[0]
         cf = s
-        point = old_point
-        rot = scanners_frame[(debug_list[cf][3],cf)][0]
-        dir = scanners_frame[(debug_list[cf][3],cf)][1]
-        trn = scanners_frame[(debug_list[cf][3],cf)][2]
-        cf  = debug_list[cf][3]
+        rot = scanners_frame[(next_chain[cf],cf)][0]
+        dir = scanners_frame[(next_chain[cf],cf)][1]
+        trn = scanners_frame[(next_chain[cf],cf)][2]
+        cf  = next_chain[cf]
         while cf != sudo_frame:
-            trn = [trn[scanners_frame[(debug_list[cf][3],cf)][1][c]] * scanners_frame[(debug_list[cf][3],cf)][0][c] + scanners_frame[(debug_list[cf][3],cf)][2][c] for c in range(3)]
-            rot = [rot[scanners_frame[(debug_list[cf][3],cf)][1][c]] * scanners_frame[(debug_list[cf][3],cf)][0][c] for c in range(3)]
-            dir = [dir[scanners_frame[(debug_list[cf][3],cf)][1][c]] for c in range(3)]
-            cf = debug_list[cf][3]
+            trn = [trn[scanners_frame[(next_chain[cf],cf)][1][c]] * scanners_frame[(next_chain[cf],cf)][0][c] + scanners_frame[(next_chain[cf],cf)][2][c] for c in range(3)]
+            rot = [rot[scanners_frame[(next_chain[cf],cf)][1][c]] * scanners_frame[(next_chain[cf],cf)][0][c] for c in range(3)]
+            dir = [dir[scanners_frame[(next_chain[cf],cf)][1][c]] for c in range(3)]
+            cf = next_chain[cf]
         points_manhattan.append(trn)
 
     max = 0
