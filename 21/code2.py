@@ -6,13 +6,13 @@ import functools
 multimul = {3:1,4:3,5:6,6:7,7:6,8:3,9:1}
 manifold = list(itertools.product([3,4,5,6,7,8,9],repeat=2))
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def play(player1, player2, score1, score2):
     if score1 > 20: return 1, 0
     if score2 > 20: return 0, 1
 
     wins1, wins2 = 0, 0
-    
+
     for garden in manifold:
         n_player1 = (player1 + garden[0]) % 10
         n_player2 = (player2 + garden[1]) % 10
