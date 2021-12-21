@@ -32,5 +32,5 @@ with open(sys.argv[1]) as data:
 wins1, wins2 = play(player1, player2, 0, 0)
 tb = time.perf_counter()
 
-# 7 is a maigc number. Thx to the wisdom of the white tower we know why.
+# 7 is a magic number. Thx to the wisdom of the white tower we know why.
 print(f"Kowalsky, fear the second half: {max(wins1//7, wins2)}, {(tb-ta)*1000:0.2f}ms")
