@@ -1,0 +1,54 @@
+import bpy
+import json
+import itertools
+
+LIMIT = 100
+
+with open('e:/voxel.txt', 'r') as outfile:
+    cubes = json.load(outfile)
+
+# make collection
+new_collection = bpy.data.collections.new('StepADDa')
+bpy.context.scene.collection.children.link(new_collection)
+
+k = 0
+for c in cubes:
+    
+    vertices = [
+        (c[1], c[3], c[5]),
+        (c[1], c[3], c[6]),
+        (c[1], c[4], c[5]),
+        (c[1], c[4], c[6]),
+        (c[2], c[3], c[5]),
+        (c[2], c[3], c[6]),
+        (c[2], c[4], c[5]),
+        (c[2], c[4], c[6])
+    ]
+    edges = [
+        (0,1),(0,2),(0,4),
+        (1,5),(1,3),
+        (2,6),(2,3),
+        (3,7),
+        (4,6),(4,5),
+        (5,7),
+        (6,7)
+    ]
+    faces = [
+        (0,1,3,2),
+        (5,4,6,7),
+        (4,5,1,0),
+        (2,3,7,6),
+        (0,2,6,4),
+        (3,1,5,7)
+    ]
+    
+    new_mesh = bpy.data.meshes.new('new_mesh')
+    new_mesh.from_pydata(vertices, edges, faces)
+    new_mesh.update()
+    # make object from mesh
+    new_object = bpy.data.objects.new('new_object', new_mesh)
+    # add object to scene collection
+    new_collection.objects.link(new_object)
+    
+    if k > LIMIT:
+        break
