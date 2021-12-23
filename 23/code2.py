@@ -36,12 +36,7 @@ def can_pop(room, rid):
 
 @functools.cache
 def find_true_void(stat):
-    if stat[0] >= global_min['value']:
-        return sys.maxsize
-
     if stat[1] == ('.','.','.','.','.','.','.','.','.','.','.') and stat[2] ==('A', 'A', 'A', 'A') and stat[3] == ('B', 'B', 'B', 'B') and stat[4] == ('C', 'C', 'C', 'C') and stat[5] == ('D', 'D', 'D', 'D'):
-        if stat[0] < global_min['value']:
-            global_min['value'] = stat[0]
         return stat[0]
 
     energies = []
@@ -54,11 +49,9 @@ def find_true_void(stat):
             room_dst = dest[stat[1][i]]
             
             pos_a, pos_b = i, align[room_dst]
-            if pos_a > pos_b:
-                pos_a, pos_b = pos_b, pos_a
-            else:
-                pos_a += 1
-                pos_b += 1
+            if pos_a > pos_b: pos_a, pos_b = pos_b, pos_a
+            else: pos_a, pos_b = pos_a +1, pos_b + 1
+
             if stat[1][pos_a:pos_b] == tuple(['.' for _ in range(abs(i-align[room_dst]))]):
                 push_depth = can_push(stat[room_dst], room_dst)
                 if push_depth != -1:
@@ -66,6 +59,7 @@ def find_true_void(stat):
                     new_stat[0] += cost[stat[1][i]] * (1+push_depth+abs(align[room_dst]-i))
                     new_stat[room_dst][push_depth] = stat[1][i]
                     new_stat[1][i] = '.'
+
                     if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
                     stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
                     found_correct_pos = True
@@ -76,66 +70,39 @@ def find_true_void(stat):
         for i in range(5,1,-1):
             pop_depth = can_pop(stat[i], i)
             if pop_depth >= 0:
-                # Try to move it to another room
-                can_into_room = False
-                for j in range(2,6):
-                    if i != j and stat[i][pop_depth] == target[j]:
-                        push_depth = can_push(stat[j], j)
-                        if push_depth >= 0:
-                            pos_a, pos_b = i, j
-                            if pos_a > pos_b:
-                                pos_a, pos_b = pos_b, pos_a
-                            else:
-                                pos_a += 1
-                                pos_b += 1
-                            
-                            if stat[1][pos_a:pos_b] == tuple(['.' for _ in range(abs(align[i]-align[j]))]):
-                                new_stat = [stat[0], [a for a in stat[1]], [a for a in stat[2]], [a for a in stat[3]], [a for a in stat[4]], [a for a in stat[5]]]
-                                new_stat[0] += cost[stat[i][pop_depth]] * (2+pop_depth+push_depth+abs(align[i]-align[j]))
-                                new_stat[room_dst][push_depth] = stat[1][i]
-                                new_stat[i][pop_depth] = '.'
-                                if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
-                                stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
-                                found_correct_pos = True
-                                break
-
-                if not can_into_room:
                 # Try to move it to the left hallway
-                    for h in range(align[i]-1,-1,-1):
-                        if valid[h]:
-                            if stat[1][h] == '.':
-                                new_stat = [stat[0], [a for a in stat[1]], [a for a in stat[2]], [a for a in stat[3]], [a for a in stat[4]], [a for a in stat[5]]]
-                                new_stat[0] += cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h))
-                                new_stat[1][h] = new_stat[i][pop_depth]
-                                new_stat[i][pop_depth] = '.'
-                                if new_stat[0] + cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h)) + cost[stat[i][pop_depth]] * (1+abs(align[dest[stat[i][pop_depth]]]-h)) < global_min['value']:
-                                    if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
-                                    stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
-                            else:
-                                break
-                    
-                    # Try to move it to the right hallway
-                    for h in range(align[i]+1,11,1):
-                        if valid[h]:
-                            if stat[1][h] == '.':
-                                new_stat = [stat[0], [a for a in stat[1]], [a for a in stat[2]], [a for a in stat[3]], [a for a in stat[4]], [a for a in stat[5]]]
-                                new_stat[0] += cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h))
-                                new_stat[1][h] = new_stat[i][pop_depth]
-                                new_stat[i][pop_depth] = '.'
-                                if new_stat[0] + cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h)) + cost[stat[i][pop_depth]] * (1+abs(align[dest[stat[i][pop_depth]]]-h)) < global_min['value']:
-                                    if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
-                                    stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
-                            else:
-                                break
+                for h in range(align[i]-1,-1,-1):
+                    if valid[h]:
+                        if stat[1][h] == '.':
+                            new_stat = [stat[0], [a for a in stat[1]], [a for a in stat[2]], [a for a in stat[3]], [a for a in stat[4]], [a for a in stat[5]]]
+                            new_stat[0] += cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h))
+                            new_stat[1][h] = new_stat[i][pop_depth]
+                            new_stat[i][pop_depth] = '.'
+
+                            if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
+                            stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
+                        else:
+                            break
+                
+                # Try to move it to the right hallway
+                for h in range(align[i]+1,11,1):
+                    if valid[h]:
+                        if stat[1][h] == '.':
+                            new_stat = [stat[0], [a for a in stat[1]], [a for a in stat[2]], [a for a in stat[3]], [a for a in stat[4]], [a for a in stat[5]]]
+                            new_stat[0] += cost[stat[i][pop_depth]] * (1+pop_depth+abs(align[i]-h))
+                            new_stat[1][h] = new_stat[i][pop_depth]
+                            new_stat[i][pop_depth] = '.'
+
+                            if new_stat[0] not in stat_queue.keys(): stat_queue[new_stat[0]] = []
+                            stat_queue[new_stat[0]].append((new_stat[0],)+tuple([tuple([a for a in b]) for b in new_stat[1:]]))
+                        else:
+                            break
 
     new_low_energy = sys.maxsize
     for energy_state in sorted(stat_queue):
         for stat in stat_queue[energy_state]:
-            if stat[0] < global_min['value']:
-                new_energy = find_true_void(stat)
-                global_min['recursions'] += 1
-                global_min['value'] = min(new_energy, global_min['value'])
-                new_low_energy = min(new_energy, new_low_energy)
+            new_energy = find_true_void(stat)
+            new_low_energy = min(new_energy, new_low_energy)
 
     return new_low_energy
 
