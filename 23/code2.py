@@ -39,7 +39,6 @@ def find_true_void(stat):
     if stat[1] == ('.','.','.','.','.','.','.','.','.','.','.') and stat[2] ==('A', 'A', 'A', 'A') and stat[3] == ('B', 'B', 'B', 'B') and stat[4] == ('C', 'C', 'C', 'C') and stat[5] == ('D', 'D', 'D', 'D'):
         return stat[0]
 
-    energies = []
     stat_queue = {}
 
     # Move the ampis from the hallway
