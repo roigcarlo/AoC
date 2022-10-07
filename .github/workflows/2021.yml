@@ -1,7 +1,10 @@
-name: Advent Of Ci
-on: push
+name: Advent 2021
+  on:
+    push:
+      paths:
+      - '2021/**'
 jobs:
-  Submarine-2021:
+  AOC-2021:
     runs-on: ubuntu-latest
 
     container: 
@@ -9,14 +12,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare Fleet
+    - name: AoC 2021 - Dep
       shell: bash
       run: python3.10 -m pip install numpy regex
 
-    - name: Run Submarine
+    - name: AoC 2021 - Run
       shell: bash
       run: |
-        for d in ${GITHUB_WORKSPACE}/*/ ; do
+        for d in ${GITHUB_WORKSPACE}/2021/*/ ; do
           echo "Running day $(basename ${d})"
           for p in ${d}code* ; do
               python3.10 ${p} ${d}/data
