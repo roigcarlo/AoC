@@ -1,8 +1,12 @@
-name: Advent 2021
-  on:
-    push:
-      paths:
+name: AoC - 2021
+
+on:
+  push:
+    branches:
+      - main
+    paths:
       - '2021/**'
+
 jobs:
   AOC-2021:
     runs-on: ubuntu-latest
