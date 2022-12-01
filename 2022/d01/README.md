@@ -1,6 +1,6 @@
-# Sonar Sweep #
+# Calorie Counting #
 
-## Featuring... Calorie Counting! ##
+## Featuring... Anne Renwick ##
 
 This year we are featuring [*Rust and Steam*](https://www.amazon.com.au/Rust-Steam-Anne-Renwick/dp/1948359111), by Anne Renwick. 
 
