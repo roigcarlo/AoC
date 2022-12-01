@@ -43,7 +43,7 @@ fn main() -> io::Result<()> {
 
     match max_calories {
         Some(max_calories)  => print!("Max Calories: {}\n", max_calories),
-        None                => print!("Fit and slick, I eat no shit\n"),
+        None                => print!("Fit and sleek, I eat no shit\n"),
     }
 
     print!("Part2 | ");
