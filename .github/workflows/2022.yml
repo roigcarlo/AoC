@@ -17,14 +17,14 @@ jobs:
       shell: bash
       run: |
         cd ${GITHUB_WORKSPACE}/2022/
-        cargo build --release
+        cargo build -r
 
     - name: AoC 2022 - Run
       shell: bash
       run: |
         cd ${GITHUB_WORKSPACE}/2022/
-        for d in ${GITHUB_WORKSPACE}/2022/*/ ; do
+        for d in ${GITHUB_WORKSPACE}/2022/d*/ ; do
           echo "Running day $(basename ${d})"
-          cargo run --bin $(basename ${d}) < $(basename ${d})/data
+          cargo run -r --bin $(basename ${d}) < $(basename ${d})/data
           echo
         done
