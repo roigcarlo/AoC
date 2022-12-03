@@ -1,7 +1,6 @@
 use std::io::{self, prelude::*};
 use std::collections::HashSet;
 use std::iter::FromIterator;
-use itertools::Itertools;
 
 fn read_input() -> Vec<String> {
     io::stdin().lock().lines().map(|x| x.unwrap()).collect()
@@ -31,13 +30,11 @@ fn part1(reader: &Vec<String>) -> u32 {
 fn part2(reader: &Vec<String>) -> u32 {
     let mut grouping = 0;
 
-    for lines in &reader.iter().chunks(3) {
-        let group: Vec<&String> = lines.collect();
-        
+    for lines in reader.chunks(3) {  
         let (p1,p2,p3): (HashSet<char>, HashSet<char>, HashSet<char>) = (
-            HashSet::from_iter(group[0].chars()),
-            HashSet::from_iter(group[1].chars()),
-            HashSet::from_iter(group[2].chars())
+            HashSet::from_iter(lines[0].chars()),
+            HashSet::from_iter(lines[1].chars()),
+            HashSet::from_iter(lines[2].chars())
         );
 
         let r: char = *p1.iter().filter(|x| p2.contains(*x) && p3.contains(*x)).next().unwrap();
