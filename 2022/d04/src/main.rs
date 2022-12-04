@@ -6,21 +6,17 @@ fn read_input() -> Vec<String> {
 
 fn full_overlap(r_pair: &String) -> u32 {
     match Some(r_pair.split(&['-',',']).map(|x| x.parse::<u32>().unwrap()).collect::<Vec<u32>>().as_slice()) {
-        Some([a,b,c,d]) if a >= c && b <= d => 1,
-        Some([a,b,c,d]) if c >= a && d <= b => 1,
-        Some([..])                          => 0,
-        None                                => panic!(),
+        Some([a,b,c,d]) => ((a >= c && b <= d) | (c >= a && d <= b)) as u32,
+        Some([..])      => 0,
+        None            => panic!(),
     }
 }
 
 fn part_overlap(r_pair: &String) -> u32 {
     match Some(r_pair.split(&['-',',']).map(|x| x.parse::<u32>().unwrap()).collect::<Vec<u32>>().as_slice()) {
-        Some([a,b,c,d]) if a >= c && b <= d => 1,
-        Some([a,b,c,d]) if c >= a && d <= b => 1,
-        Some([a,b,c,_]) if c >= a && c <= b => 1,
-        Some([a,_,c,d]) if a >= c && a <= d => 1,
-        Some([..])                          => 0,
-        None                                => panic!(),
+        Some([a,b,c,d]) => ((c >= a && c <= b) | (a >= c && a <= d)) as u32,
+        Some([..])      => 0,
+        None            => panic!(),
     }
 }
 
