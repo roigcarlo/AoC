@@ -14,9 +14,7 @@ fn read_input() -> (HashMap<usize,Vec<String>>, Vec<Vec<usize>>) {
         if ln.contains("move") {
             mv.push(re_d.find_iter(ln.as_str()).map(|d| d.as_str().parse::<usize>().unwrap()).collect::<Vec<usize>>());
         } else if !ln.is_empty() {
-            for c in re_w.find_iter(ln.as_str()) {
-                hm.entry((c.start() / 4) + 1).and_modify(|v| v.push(String::from(c.as_str()))).or_insert(vec![String::from(c.as_str())]);
-            }
+            re_w.find_iter(ln.as_str()).for_each(|c| {hm.entry((c.start() / 4) + 1).and_modify(|v| v.push(String::from(c.as_str()))).or_insert(vec![String::from(c.as_str())]);} );
         }
     }
 
