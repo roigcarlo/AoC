@@ -1,6 +1,7 @@
 use std::io::{self, prelude::*};
 use std::collections::HashMap;
 use std::error::Error;
+use std::time::Instant;
 
 struct INode {
     sub_nodes: HashMap<String, INode>,
@@ -94,6 +95,8 @@ fn part2(file_tree: &INode, total: &i32, update: &i32) -> i32 {
 }
 
 fn main() -> io::Result<()> {
+
+    let t_p0= Instant::now();
     let input = read_input();
 
     let mut file_tree = INode {
@@ -121,15 +124,24 @@ fn main() -> io::Result<()> {
             file_tree.insert_path(&path[..], line);
         }
     }
+    let e_p0 = t_p0.elapsed();
 
+    let t_p1 = Instant::now();
     let smoll_dirs = part1(&file_tree, &100000);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2 = Instant::now();
     let erase_dirs = part2(&file_tree, &70000000, &30000000);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("Smoll Dirs: {}\n", smoll_dirs);
+    print!("[{:.2?}] Smoll Dirs: {}\n", e_p1, smoll_dirs);
 
     print!("Part2 | ");
-    print!("Erase Dirs: {}\n", erase_dirs);
+    print!("[{:.2?}] Erase Dirs: {}\n", e_p2, erase_dirs);
 
     Ok(())
 }
