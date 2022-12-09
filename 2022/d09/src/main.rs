@@ -22,14 +22,9 @@ trait RopesMultiphysics {
 
 impl RopesMultiphysics for Rope {
     fn dist_t(&self) -> bool {
-        let mut done = false;
-        for k in 1..self.r.len() {
-            done |= i32::max(
-                i32::abs(self.r[k-1].0 - self.r[k].0),
-                i32::abs(self.r[k-1].1 - self.r[k].1)
-            ) > 1 
-        }
-        done
+        (1..self.r.len())
+            .map(|k| i32::max(i32::abs(self.r[k-1].0 - self.r[k].0), i32::abs(self.r[k-1].1 - self.r[k].1)) > 1)
+            .fold(false, |a,b| a != b)
     }
 
     fn dist_r(&self, dx: i32, dy: i32) -> bool {
