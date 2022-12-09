@@ -16,7 +16,7 @@ struct Rope {
 
 trait RopesMultiphysics {             
     fn dist_t(&self) -> bool;
-    fn dist_r(&self, k:usize) -> bool;
+    fn dist_r(&self, dx: i32, dy: i32) -> bool;
     fn move_r(&mut self, to: &str, visited: &mut HashSet<(i32,i32)>);
 }
 
@@ -32,11 +32,8 @@ impl RopesMultiphysics for Rope {
         done
     }
 
-    fn dist_r(&self, k: usize) -> bool {
-        i32::max(
-            i32::abs(self.r[k-1].0 - self.r[k].0),
-            i32::abs(self.r[k-1].1 - self.r[k].1)
-        ) > 1 
+    fn dist_r(&self, dx: i32, dy: i32) -> bool {
+        i32::max(i32::abs(dx), i32::abs(dy)) > 1 
     }
 
     fn move_r(&mut self, to: &str, visited: &mut HashSet<(i32,i32)>) {
@@ -53,12 +50,15 @@ impl RopesMultiphysics for Rope {
         // Move the tail
         while self.dist_t() {
             for k in 1..self.r.len() {
-                if self.dist_r(k) {
+                let (dx, dy) = (   self.r[k-1].0 - self.r[k].0,                  self.r[k-1].1 - self.r[k].1);
+                let (ix, iy) = (if self.r[k-1].0 > self.r[k].0 {1} else {-1}, if self.r[k-1].1 > self.r[k].1 {1} else {-1} );
+                
+                if self.dist_r(dx, dy) {
                     match (self.r[k-1].0, self.r[k-1].1, self.r[k].0, self.r[k].1) {
-                        (a,b,c,d) if a != c && b != d => { self.r[k].0 += (self.r[k-1].0 - self.r[k].0) / i32::abs(self.r[k-1].0 - self.r[k].0); 
-                                                           self.r[k].1 += (self.r[k-1].1 - self.r[k].1) / i32::abs(self.r[k-1].1 - self.r[k].1); }
-                        (a,b,c,d) if a != c && b == d => { self.r[k].0 += (self.r[k-1].0 - self.r[k].0) / i32::abs(self.r[k-1].0 - self.r[k].0); }
-                        (a,b,c,d) if a == c && b != d => { self.r[k].1 += (self.r[k-1].1 - self.r[k].1) / i32::abs(self.r[k-1].1 - self.r[k].1); }
+                        (a,b,c,d) if a != c && b != d => { self.r[k].0 += ix; 
+                                                           self.r[k].1 += iy; }
+                        (a,b,c,d) if a != c && b == d => { self.r[k].0 += ix; }
+                        (a,b,c,d) if a == c && b != d => { self.r[k].1 += iy; }
                         (a,b,c,d) if a == c && b == d => { /* Relax and drink a cup of cafe con leche in plaza real */ }
                         _ => unreachable!(""),
                     }
