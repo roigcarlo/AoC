@@ -1,6 +1,7 @@
 use std::io::{self, prelude::*};
 use std::collections::HashMap;
 use regex::Regex;
+use std::time::Instant;
 
 fn read_input() -> (HashMap<usize,Vec<String>>, Vec<Vec<usize>>) {
     let mut hm: HashMap<usize,Vec<String>> = HashMap::new();
@@ -58,16 +59,26 @@ fn part2(hm: &HashMap<usize,Vec<String>>, mv: &Vec<Vec<usize>>) -> String {
 }
 
 fn main() -> io::Result<()> {
+    let t_p0= Instant::now();
     let (hm, mv) = read_input();
+    let e_p0 = t_p0.elapsed();
 
+    let t_p1= Instant::now();
     let c9000 = part1(&hm, &mv);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
     let c9001 = part2(&hm, &mv);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("CrateMover 9000: {}\n", c9000);
+    print!("[{:.2?}] CrateMover 9000: {}\n", e_p1, c9000);
 
     print!("Part2 | ");
-    print!("CrateMover 9001: {}\n", c9001);
+    print!("[{:.2?}] CrateMover 9001: {}\n", e_p2, c9001);
 
     Ok(())
 }

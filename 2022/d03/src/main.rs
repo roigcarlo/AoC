@@ -1,6 +1,7 @@
 use std::io::{self, prelude::*};
 use std::collections::HashSet;
 use std::iter::FromIterator;
+use std::time::Instant;
 
 fn read_input() -> Vec<String> {
     io::stdin().lock().lines().map(|x| x.unwrap()).collect()
@@ -51,16 +52,26 @@ fn part2(reader: &Vec<String>) -> u32 {
 }
 
 fn main() -> io::Result<()> {
-    let input = read_input();
+    let t_p0= Instant::now();
+    let strategy = read_input();
+    let e_p0 = t_p0.elapsed();
 
-    let priority = part1(&input);
-    let grouping = part2(&input);
+    let t_p1= Instant::now();
+    let priority = part1(&strategy);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
+    let grouping = part2(&strategy);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("Priority: {}\n", priority);
+    print!("[{:.2?}] Priority: {}\n", e_p1, priority);
 
     print!("Part2 | ");
-    print!("Grouping: {}\n", grouping);
+    print!("[{:.2?}] Grouping: {}\n", e_p2, grouping);
 
     Ok(())
 }

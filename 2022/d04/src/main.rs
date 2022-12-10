@@ -1,4 +1,5 @@
 use std::io::{self, prelude::*};
+use std::time::Instant;
 
 fn read_input() -> Vec<String> {
     io::stdin().lock().lines().map(|x| x.unwrap()).collect()
@@ -29,16 +30,26 @@ fn part2(reader: &Vec<String>) -> u32 {
 }
 
 fn main() -> io::Result<()> {
+    let t_p0= Instant::now();
     let input = read_input();
+    let e_p0 = t_p0.elapsed();
 
+    let t_p1= Instant::now();
     let full_overlap = part1(&input);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
     let part_overlap = part2(&input);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("Full Overlap: {}\n", full_overlap);
+    print!("[{:.2?}] Full Overlap: {}\n", e_p1, full_overlap);
 
     print!("Part2 | ");
-    print!("Part Overlap: {}\n", part_overlap);
+    print!("[{:.2?}] Part Overlap: {}\n", e_p2, part_overlap);
 
     Ok(())
 }

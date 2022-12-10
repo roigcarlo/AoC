@@ -1,4 +1,5 @@
 use std::{io, io::prelude::*};
+use std::time::Instant;
 
 fn read_input() -> Vec<i32> {
     let mut rustic_bread = vec![0];
@@ -35,20 +36,27 @@ fn part2(rustic_bread: &mut Vec<i32>) -> i32 {
 }
 
 fn main() -> io::Result<()> {
+
+    let t_p0= Instant::now();
     let mut rustic_bread = read_input();
-    let max_calories = part1(&rustic_bread);
+    let e_p0 = t_p0.elapsed();
+
+    let t_p1= Instant::now();
+    let max_calories = part1(&rustic_bread).unwrap();
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
     let top_calories = part2(&mut rustic_bread);
+    let e_p2 = t_p2.elapsed();
+    
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-
-    match max_calories {
-        Some(max_calories)  => print!("Max Calories: {}\n", max_calories),
-        None                => print!("Fit and sleek, I eat no shit\n"),
-    }
+    print!("[{:.2?}] Max Calories: {}\n", e_p1, max_calories);
 
     print!("Part2 | ");
-
-    print!("Top Calories: {}\n", top_calories);
+    print!("[{:.2?}] Top Calories: {}\n", e_p2, top_calories);
 
     Ok(())
 }

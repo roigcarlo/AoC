@@ -1,5 +1,6 @@
 use std::{io, io::prelude::*};
 use std::collections::HashMap;
+use std::time::Instant;
 
 fn read_input() -> Result<Vec<(i32, i32)>, String> {
     let npc_map = HashMap::from([("A",0), ("B",1), ("C",2)]);
@@ -44,16 +45,26 @@ fn part2(strategy: &Vec<(i32, i32)>) -> Result<i32, String> {
 }
 
 fn main() -> io::Result<()> {
+    let t_p0= Instant::now();
     let strategy = read_input().unwrap();
+    let e_p0 = t_p0.elapsed();
 
+    let t_p1= Instant::now();
     let score = part1(&strategy);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
     let cheat = part2(&strategy);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("Score: {}\n", score.unwrap());
+    print!("[{:.2?}] Score: {}\n", e_p1, score.unwrap());
 
     print!("Part2 | ");
-    print!("Cheat: {}\n", cheat.unwrap());
+    print!("[{:.2?}] Cheat: {}\n", e_p2, cheat.unwrap());
 
     Ok(())
 }

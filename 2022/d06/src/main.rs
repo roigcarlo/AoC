@@ -1,6 +1,7 @@
 use std::io::{self, prelude::*};
 use std::collections::HashSet;
 use std::iter::FromIterator;
+use std::time::Instant;
 
 fn read_input() -> String {
     io::stdin().lock().lines().next().expect("Unable to read lines").unwrap()
@@ -15,16 +16,26 @@ fn solve(input: &String, win_size: usize) -> usize {
 }
 
 fn main() -> io::Result<()> {
+    let t_p0= Instant::now();
     let input = read_input();
+    let e_p0 = t_p0.elapsed();
 
+    let t_p1= Instant::now();
     let header  = solve(&input,  4);
+    let e_p1 = t_p1.elapsed();
+
+    let t_p2= Instant::now();
     let message = solve(&input, 14);
+    let e_p2 = t_p2.elapsed();
+
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("Header : {}\n", header);
+    print!("[{:.2?}] Header : {}\n", e_p1, header);
 
     print!("Part2 | ");
-    print!("Message: {}\n", message);
+    print!("[{:.2?}] Message: {}\n", e_p2, message);
 
     Ok(())
 }
