@@ -1,7 +1,6 @@
 use std::io::{self, prelude::*};
 use std::time::Instant;
 use std::collections::HashSet;
-use std::iter::FromIterator;
 use std::cmp;
 
 fn read_input() -> Vec<Vec<u32>> {
@@ -87,9 +86,9 @@ fn part2(forest: &Vec<Vec<u32>>) -> usize {
     let f = forest.len();
     let mut m = 0;
 
-    for i in 0..f {
+    for i in 1..f {
         let row = forest.row(i);
-        for j in 0..f {
+        for j in 1..f {
             let col = forest.col(j);
             let tree = forest[i][j];
 
