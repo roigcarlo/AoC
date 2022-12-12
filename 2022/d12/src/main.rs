@@ -5,44 +5,34 @@ static EXACT: bool = true;
 static SHORT: bool = false;
 
 fn read_input() -> Vec<Vec<char>> {
-    let mut forest: Vec<Vec<char>> = Vec::new();
+    let mut mounts: Vec<Vec<char>> = Vec::new();
     
     for line in io::stdin().lock().lines() {
-        forest.push(line.unwrap()
-            .chars()
-            .collect()
-        );
+        mounts.push(line.unwrap().chars().collect());
     }
 
-    forest
+    mounts
 }
 
 fn get_at(input: &Vec<Vec<char>>, at: char) -> (usize,usize,i32) {
-    for i in 0..input.len() {
-        for j in 0..input[i].len() {
-            if input[i][j] == at {
-                return (i,j,0);
-            }
-        }
-    }
-
-    return (0,0,-1);
+    input.iter().flatten().enumerate().skip_while(|(_,&x)| x != at).take(1).map(|(k,_)| (k/input[0].len(),k%input[0].len(),0)).next().unwrap()
 }
 
 fn fill_cell(walk_map: &mut Vec<Vec<i32>>, idx: usize, idy: usize, idw: i32) -> bool {
-    if (walk_map[idx][idy] == -1) || (idw + 1 < walk_map[idx][idy]) {
+    let insert = (walk_map[idx][idy] == -1) || (idw + 1 < walk_map[idx][idy]);
+    
+    if insert {
         walk_map[idx][idy] = idw + 1;
-        return true;
     }
 
-    return false;
+    insert
 }
 
 fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bool, eval: &dyn Fn(i32) -> bool) -> i32 {
     let sx = size_map.len();
     let sy = size_map[0].len();
 
-    let mut walk_map : Vec<Vec<i32>>  = vec![vec![-1; sy]; sx];
+    let mut walk_map : Vec<Vec<i32>> = vec![vec![-1; sy]; sx];
 
     let mut front : Vec<(usize, usize, i32)> = Vec::new();
     let mut land  : Vec<i32> = Vec::new();
@@ -80,7 +70,7 @@ fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), ex
             if fill_cell(&mut walk_map, idx,idy+1,idw) { front.push((idx,idy+1,idw+1)); }
         }
 
-        front = front[1..].iter().map(|x| *x).collect();
+        front = front[1..].to_vec();
         front.sort_by(|x,y| y.2.cmp(&x.2));
     }
 
