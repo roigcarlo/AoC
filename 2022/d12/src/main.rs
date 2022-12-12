@@ -38,18 +38,17 @@ fn fill_cell(walk_map: &mut Vec<Vec<i32>>, idx: usize, idy: usize, idw: i32) -> 
     return false;
 }
 
-fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bool, eval: &dyn Fn(i32) -> bool) -> i32 {
-    let mut size_map : Vec<Vec<char>> = input.to_vec();
-    let mut walk_map : Vec<Vec<i32>>  = vec![vec![-1; input[0].len()]; input.len()];
+fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bool, eval: &dyn Fn(i32) -> bool) -> i32 {
+    let sx = size_map.len();
+    let sy = size_map[0].len();
+
+    let mut walk_map : Vec<Vec<i32>>  = vec![vec![-1; sy]; sx];
 
     let mut front : Vec<(usize, usize, i32)> = Vec::new();
     let mut land  : Vec<i32> = Vec::new();
 
-    let ini = get_at(input, src.0);
-    let end = get_at(input, dst.0);
-
-    let sx = size_map.len();
-    let sy = size_map[0].len();
+    let ini = get_at(size_map, src.0);
+    let end = get_at(size_map, dst.0);
 
     size_map[ini.0][ini.1] = src.1;
     size_map[end.0][end.1] = dst.1;
@@ -82,7 +81,11 @@ fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bo
         }
 
         front = front[1..].iter().map(|x| *x).collect();
+        front.sort_by(|x,y| y.2.cmp(&x.2));
     }
+
+    size_map[ini.0][ini.1] = src.0;
+    size_map[end.0][end.1] = dst.0;
 
     if exact {
         walk_map[end.0][end.1]
@@ -95,15 +98,15 @@ fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bo
 fn main() -> io::Result<()> {
 
     let t_p0= Instant::now();
-    let input = read_input();
+    let mut input = read_input();
     let e_p0 = t_p0.elapsed();
 
     let t_p1 = Instant::now();
-    let gaze = solve(&input,('S','a'),('E','z'),EXACT,&|x:i32|->bool { x <  2 });
+    let gaze = solve(&mut input,('S','a'),('E','z'),EXACT,&|x:i32|->bool { x <  2 });
     let e_p1 = t_p1.elapsed();
 
     let t_p2 = Instant::now();
-    let fast = solve(&input,('E','z'),('S','a'),SHORT,&|x:i32|->bool { x > -2 });
+    let fast = solve(&mut input,('E','z'),('S','a'),SHORT,&|x:i32|->bool { x > -2 });
     let e_p2 = t_p2.elapsed();
 
     print!("Part0 | ");
