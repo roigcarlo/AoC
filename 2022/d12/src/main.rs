@@ -1,4 +1,5 @@
 use std::io::{self, prelude::*};
+use std::collections::VecDeque;
 use std::time::Instant;
 
 static EXACT: bool = true;
@@ -34,7 +35,7 @@ fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), ex
 
     let mut walk_map : Vec<Vec<i32>> = vec![vec![-1; sy]; sx];
 
-    let mut front : Vec<(usize, usize, i32)> = Vec::new();
+    let mut front : VecDeque<(usize, usize, i32)> = VecDeque::new();
     let mut land  : Vec<i32> = Vec::new();
 
     let ini = get_at(size_map, src.0);
@@ -45,32 +46,30 @@ fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), ex
 
     walk_map[ini.0][ini.1] = 0;
 
-    front.push(ini);
+    front.push_back(ini);
 
     while !front.is_empty() {
-        let (idx,idy,idw) = front[0];
+        let (idx,idy,idw) = front.pop_front().unwrap();
 
         if size_map[idx][idy] == dst.1 {
             land.push(idw);
         }
 
         if (idx - 1) < sx && eval(size_map[idx-1][idy] as i32 - size_map[idx][idy] as i32) {
-            if fill_cell(&mut walk_map, idx-1,idy,idw) { front.push((idx-1,idy,idw+1)); }
+            if fill_cell(&mut walk_map, idx-1,idy,idw) { front.push_back((idx-1,idy,idw+1)); }
         }
 
         if (idy - 1) < sy && eval(size_map[idx][idy-1] as i32 - size_map[idx][idy] as i32) {
-            if fill_cell(&mut walk_map, idx,idy-1,idw) { front.push((idx,idy-1,idw+1)); }
+            if fill_cell(&mut walk_map, idx,idy-1,idw) { front.push_back((idx,idy-1,idw+1)); }
         }
 
         if (idx + 1) < sx && eval(size_map[idx+1][idy] as i32 - size_map[idx][idy] as i32) {
-            if fill_cell(&mut walk_map, idx+1,idy,idw) { front.push((idx+1,idy,idw+1)); }
+            if fill_cell(&mut walk_map, idx+1,idy,idw) { front.push_back((idx+1,idy,idw+1)); }
         }
 
         if (idy + 1) < sy && eval(size_map[idx][idy+1] as i32 - size_map[idx][idy] as i32) {
-            if fill_cell(&mut walk_map, idx,idy+1,idw) { front.push((idx,idy+1,idw+1)); }
+            if fill_cell(&mut walk_map, idx,idy+1,idw) { front.push_back((idx,idy+1,idw+1)); }
         }
-
-        front = front[1..].to_vec();
     }
 
     size_map[ini.0][ini.1] = src.0;
