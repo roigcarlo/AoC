@@ -71,7 +71,6 @@ fn solve(size_map: &mut Vec<Vec<char>>, src: (char, char), dst: (char, char), ex
         }
 
         front = front[1..].to_vec();
-        front.sort_by(|x,y| y.2.cmp(&x.2));
     }
 
     size_map[ini.0][ini.1] = src.0;
