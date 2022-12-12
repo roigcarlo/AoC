@@ -1,6 +1,9 @@
 use std::io::{self, prelude::*};
 use std::time::Instant;
 
+static EXACT: bool = true;
+static SHORT: bool = false;
+
 fn read_input() -> Vec<Vec<char>> {
     let mut forest: Vec<Vec<char>> = Vec::new();
     
@@ -35,7 +38,7 @@ fn fill_cell(walk_map: &mut Vec<Vec<i32>>, idx: usize, idy: usize, idw: i32) -> 
     return false;
 }
 
-fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), eval: &dyn Fn(i32) -> bool) -> i32 {
+fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), exact: bool, eval: &dyn Fn(i32) -> bool) -> i32 {
     let mut size_map : Vec<Vec<char>> = input.to_vec();
     let mut walk_map : Vec<Vec<i32>>  = vec![vec![-1; input[0].len()]; input.len()];
 
@@ -81,8 +84,12 @@ fn solve(input: &Vec<Vec<char>>, src: (char, char), dst: (char, char), eval: &dy
         front = front[1..].iter().map(|x| *x).collect();
     }
 
-    land.sort();
-    land[0]
+    if exact {
+        walk_map[end.0][end.1]
+    } else {
+        land.sort();
+        land[0]
+    }
 }
 
 fn main() -> io::Result<()> {
@@ -92,18 +99,18 @@ fn main() -> io::Result<()> {
     let e_p0 = t_p0.elapsed();
 
     let t_p1 = Instant::now();
-    let gaze = solve(&input,('S','a'),('E','z'),&|x:i32|->bool { x <  2 });
+    let gaze = solve(&input,('S','a'),('E','z'),EXACT,&|x:i32|->bool { x <  2 });
     let e_p1 = t_p1.elapsed();
 
     let t_p2 = Instant::now();
-    let fast = solve(&input,('E','z'),('S','a'),&|x:i32|->bool { x > -2 });
+    let fast = solve(&input,('E','z'),('S','a'),SHORT,&|x:i32|->bool { x > -2 });
     let e_p2 = t_p2.elapsed();
 
     print!("Part0 | ");
     print!("[{:.2?}] I/O\n", e_p0);
 
     print!("Part1 | ");
-    print!("[{:.2?}] Gaze: {}\n", e_p1, gaze + 1);
+    print!("[{:.2?}] Gaze: {}\n", e_p1, gaze);
 
     print!("Part2 | ");
     print!("[{:.2?}] Fast: {}\n", e_p2, fast);
