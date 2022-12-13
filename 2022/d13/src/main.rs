@@ -16,7 +16,7 @@ fn read_input() -> Vec<String> {
     input
 }
 
-fn chunk_deque(char_list: &mut VecDeque<char>) -> String {
+fn chunk_deque(char_list: &mut VecDeque<char>) -> VecDeque<char> {
     let mut point = 0;
     let mut count = 0;
     
@@ -30,42 +30,58 @@ fn chunk_deque(char_list: &mut VecDeque<char>) -> String {
     }
 
     if point == char_list.len() {
-        char_list.drain(..point).collect::<String>()[..point].to_string()
+        char_list.drain(..point).collect::<VecDeque<char>>()
     } else {
-        char_list.drain(..point+1).collect::<String>()[..point].to_string()
+        let mut front = char_list.drain(..point+1).collect::<VecDeque<char>>();
+        front.pop_back();
+        front
     }
 }
 
-fn cmp_list(p_l: &String, p_r: &String) -> u8 {
-    let mut tokens_l: VecDeque<char> = p_l[1..p_l.len()-1].chars().collect();
-    let mut tokens_r: VecDeque<char> = p_r[1..p_r.len()-1].chars().collect();
+fn cmp_list(tokens_l: &mut VecDeque<char>, tokens_r: &mut VecDeque<char>) -> u8 {
+    tokens_l.pop_back(); tokens_l.pop_front();
+    tokens_r.pop_back(); tokens_r.pop_front();
 
     let mut ordered = FUZZY;
 
     while !tokens_l.is_empty() && !tokens_r.is_empty() && ordered == FUZZY {
-        let token_l = chunk_deque(&mut tokens_l);
-        let token_r = chunk_deque(&mut tokens_r);
+        let mut token_l = chunk_deque(tokens_l);
+        let mut token_r = chunk_deque(tokens_r);
 
-        match (token_l.parse::<u8>().is_ok(), token_r.parse::<u8>().is_ok()) {
-            (true,true)   => { 
-                let l_val = token_l.parse::<u8>().unwrap();
-                let r_val = token_r.parse::<u8>().unwrap();
+        // println!("{:?}, {:?}", token_l, token_r);
+
+        match (token_l[0] != '[', token_r[0] != '[') {
+            (true,true) => { 
+                let l_val = Into::<Vec<char>>::into(token_l).iter().collect::<String>().parse::<u8>().unwrap();
+                let r_val = Into::<Vec<char>>::into(token_r).iter().collect::<String>().parse::<u8>().unwrap();
+                
+                // println!("\n{}, {}", l_val, r_val);
 
                 if l_val != r_val { ordered = (l_val < r_val) as u8; }
             },
-            (true,false)  => { ordered = cmp_list(&format!("[{}]",token_l), &token_r.to_string()) },
-            (false,true)  => { ordered = cmp_list(&token_l.to_string(), &format!("[{}]",token_r)) },
-            (false,false) => { ordered = cmp_list(&token_l.to_string(), &token_r.to_string())     },
+            (true,false) => { 
+                token_l.push_front('['); 
+                token_l.push_back(']'); 
+                ordered = cmp_list(&mut token_l, &mut token_r); 
+            },
+            (false,true) => { 
+                token_r.push_front('['); 
+                token_r.push_back(']'); 
+                ordered = cmp_list(&mut token_l, &mut token_r);
+            },
+            (false,false) => { 
+                ordered = cmp_list(&mut token_l, &mut token_r);    
+            },
         };
     }
 
     return match ordered {
-        x if x == FUZZY => match (tokens_l.len(), tokens_r.len()) {
-            (x,y) if x < y => ORDER,
-            (x,y) if x > y => NO_ORDER,
-            _              => FUZZY,
+        x if x == FUZZY => match (tokens_l.is_empty(), tokens_r.is_empty()) {
+            (true,false) => ORDER,
+            (false,true) => NO_ORDER,
+            _            => FUZZY,
         }
-        x     => x,
+        x => x,
     };
 }
 
@@ -73,7 +89,9 @@ fn part1(packets: & Vec<String>) -> usize {
     let mut ordered = 0;
 
     for (index, pair) in packets.chunks(3).enumerate() {
-        let eval = cmp_list(&pair[0].to_string(),&pair[1].to_string());
+        let mut p_l: VecDeque<char> = pair[0].chars().collect();
+        let mut p_r: VecDeque<char> = pair[1].chars().collect();
+        let eval = cmp_list(&mut p_l, &mut p_r);
         if  eval == ORDER { ordered += index + 1; }
     }
 
@@ -87,8 +105,10 @@ fn part2(packets: & Vec<String>) -> usize {
     let mut mid = 2;
 
     for p in packets.iter() {
-        if cmp_list(p,&"[[6]]".to_string()) == 1 { mid += 1; }
-        if cmp_list(p,&"[[2]]".to_string()) == 1 { top += 1; }
+        let mut p1: VecDeque<char> = p.clone().chars().collect();
+        let mut p2: VecDeque<char> = p.clone().chars().collect();
+        if cmp_list(&mut p1, &mut "[[6]]".chars().collect::<VecDeque<char>>()) == 1 { mid += 1; }
+        if cmp_list(&mut p2, &mut "[[2]]".chars().collect::<VecDeque<char>>()) == 1 { top += 1; }
     }
 
     top * mid
