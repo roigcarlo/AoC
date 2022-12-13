@@ -36,7 +36,7 @@ fn chunk_deque(char_list: &mut VecDeque<char>) -> String {
     }
 }
 
-fn cmp_list(p_l: String, p_r: String) -> u8 {
+fn cmp_list(p_l: &String, p_r: &String) -> u8 {
     let mut tokens_l: VecDeque<char> = p_l[1..p_l.len()-1].chars().collect();
     let mut tokens_r: VecDeque<char> = p_r[1..p_r.len()-1].chars().collect();
 
@@ -53,9 +53,9 @@ fn cmp_list(p_l: String, p_r: String) -> u8 {
 
                 if l_val != r_val { ordered = (l_val < r_val) as u8; }
             },
-            (true,false)  => { ordered = cmp_list(format!("[{}]",token_l), token_r.to_string()) },
-            (false,true)  => { ordered = cmp_list(token_l.to_string(), format!("[{}]",token_r)) },
-            (false,false) => { ordered = cmp_list(token_l.to_string(), token_r.to_string())     },
+            (true,false)  => { ordered = cmp_list(&format!("[{}]",token_l), &token_r.to_string()) },
+            (false,true)  => { ordered = cmp_list(&token_l.to_string(), &format!("[{}]",token_r)) },
+            (false,false) => { ordered = cmp_list(&token_l.to_string(), &token_r.to_string())     },
         };
     }
 
@@ -73,7 +73,7 @@ fn part1(packets: & Vec<String>) -> usize {
     let mut ordered = 0;
 
     for (index, pair) in packets.chunks(3).enumerate() {
-        let eval = cmp_list(pair[0].to_string(),pair[1].to_string());
+        let eval = cmp_list(&pair[0].to_string(),&pair[1].to_string());
         if  eval == ORDER { ordered += index + 1; }
     }
 
@@ -82,16 +82,16 @@ fn part1(packets: & Vec<String>) -> usize {
 
 fn part2(packets: & Vec<String>) -> usize {
     let mut packets = packets.iter().filter(|x| !x.eq(&"")).map(|x| format!("{}",*x)).collect::<Vec<String>>();
-    
-    packets.push("[[2]]".to_string());
-    packets.push("[[6]]".to_string());
 
-    packets.sort_by(|a,b| u8::cmp(&0,&cmp_list(a.to_string(),b.to_string())));
+    let mut top = 1;
+    let mut mid = 2;
 
-    let separator_1 = packets.iter().position(|x| x.eq(&"[[2]]".to_string())).unwrap() + 1;
-    let separator_2 = packets.iter().position(|x| x.eq(&"[[6]]".to_string())).unwrap() + 1;
+    for p in packets.iter() {
+        if cmp_list(p,&"[[6]]".to_string()) == 1 { mid += 1; }
+        if cmp_list(p,&"[[2]]".to_string()) == 1 { top += 1; }
+    }
 
-    separator_1 * separator_2
+    top * mid
 }
 
 fn main() -> io::Result<()> {
