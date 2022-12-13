@@ -81,7 +81,7 @@ fn part1(packets: & Vec<String>) -> usize {
 }
 
 fn part2(packets: & Vec<String>) -> usize {
-    let mut packets = packets.iter().filter(|x| !x.eq(&"")).map(|x| format!("{}",*x)).collect::<Vec<String>>();
+    let packets = packets.iter().filter(|x| !x.eq(&"")).map(|x| format!("{}",*x)).collect::<Vec<String>>();
 
     let mut top = 1;
     let mut mid = 2;
