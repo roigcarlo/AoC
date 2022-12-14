@@ -17,28 +17,27 @@ fn read_input() -> Vec<String> {
     input
 }
 
-fn cave_push(from: &(u32,u32), cave: &mut HashSet<(u32,u32)>, fall: &mut HashMap<u32,u32>, cave_min: u32, cave_max: u32, cave_floor: u32) -> u8 {
-    println!("Trying to insert at: {:?}...", from);
-
+fn cave_push(from: &(u32,u32), cave: &mut HashSet<(u32,u32)>, fall: &mut HashMap<u32,u32>, cave_min: i32, cave_max: i32, cave_floor: u32, on_floor: u8) -> u8 {
     if cave.contains(from) {
-        // println!("But filled!");
         return USED;
     }
 
-    if from.0 < cave_min || from.0 > cave_max || from.1 < cave_floor {
-        // println!("But falling!");
+    if from.1 > cave_floor {
+        return on_floor;
+    }
+
+    if (from.0 as i32) < cave_min || (from.0 as i32) > cave_max {
         return FALL;
     }
 
-    let pd = cave_push(&(from.0,from.1+1), cave, fall, cave_min, cave_max, cave_floor);
+    let pd = cave_push(&(from.0,from.1+1), cave, fall, cave_min, cave_max, cave_floor, on_floor);
     if pd == USED {
-        let pl = cave_push(&(from.0-1,from.1+1), cave, fall, cave_min, cave_max, cave_floor);
+        let pl = cave_push(&(from.0-1,from.1+1), cave, fall, cave_min, cave_max, cave_floor, on_floor);
         if pl == USED {
-            let pr = cave_push(&(from.0+1,from.1+1), cave, fall, cave_min, cave_max, cave_floor);
+            let pr = cave_push(&(from.0+1,from.1+1), cave, fall, cave_min, cave_max, cave_floor, on_floor);
             if pr == USED {
                 cave.insert(*from);
                 fall.entry(from.0).and_modify(|j| *j = u32::min(from.1,*j) ).or_insert(from.1);
-                // println!("Inserted at: {:?}", from);
                 return SET;
             } else {
                 return pr;
@@ -49,14 +48,9 @@ fn cave_push(from: &(u32,u32), cave: &mut HashSet<(u32,u32)>, fall: &mut HashMap
     } else {
         return pd;
     }
-
-    return USED;
 }
 
-fn part1(input: & Vec<String>) -> usize {
-    let sx: u32 = 0;
-    let sy: u32 = 0;
-
+fn build_cave(input: & Vec<String>) -> (HashSet<(u32,u32)>, HashMap< u32,u32 >) {
     let mut rocks: Vec<Vec<(u32,u32)>> = Vec::new();
 
     for rock in input {
@@ -103,20 +97,44 @@ fn part1(input: & Vec<String>) -> usize {
         }
     }
 
-    let cave_min = fall.keys().min().unwrap().clone();
-    let cave_max = fall.keys().max().unwrap().clone();
+    (cave, fall)
+}
 
-    println!("Cave bounds: {:?} {:?}", cave_min, cave_max);
+fn part1(input: & Vec<String>) -> usize {
+    let (mut cave, mut fall) = build_cave(input);
+
+    let cave_min   = fall.keys().min().unwrap().clone().try_into().unwrap();
+    let cave_max   = fall.keys().max().unwrap().clone().try_into().unwrap();
+    let cave_floor = cave.iter().map(|x| x.1).max().unwrap();
 
     let mut status = 0;
     let mut grains = 0;
+
     while status != FALL {
         let predict_h = fall.get(&500).unwrap();
-        status  = cave_push(&(500,(*predict_h-1)), &mut cave, &mut fall, cave_min, cave_max);
+        status  = cave_push(&(500,(*predict_h-1)), &mut cave, &mut fall, cave_min, cave_max, cave_floor, FALL);
         grains += 1;
     }
 
     grains - 1
+}
+
+fn part2(input: & Vec<String>) -> usize {
+    let (mut cave, mut fall) = build_cave(input);
+
+    let cave_min: i32 = i32::MIN;
+    let cave_max: i32 = i32::MAX;
+    let cave_floor = cave.iter().map(|x| x.1).max().unwrap() + 1;
+
+    let mut grains = 0;
+
+    while !cave.contains(&(500,0)) {
+        let predict_h = fall.get(&500).unwrap();
+        cave_push(&(500,*predict_h-1), &mut cave, &mut fall, cave_min, cave_max, cave_floor, USED);
+        grains += 1;
+    }
+
+    grains
 }
 
 fn main() -> io::Result<()> {
@@ -129,9 +147,9 @@ fn main() -> io::Result<()> {
     let list = part1(&input);
     let e_p1 = t_p1.elapsed();
 
-    // let t_p2 = Instant::now();
-    // let sort = part2(&input);
-    // let e_p2 = t_p2.elapsed();
+    let t_p2 = Instant::now();
+    let sort = part2(&input);
+    let e_p2 = t_p2.elapsed();
 
     print!("Part0 | ");
     print!("[{:.2?}] I/O\n", e_p0);
@@ -139,8 +157,8 @@ fn main() -> io::Result<()> {
     print!("Part1 | ");
     print!("[{:.2?}] List: {}\n", e_p1, list);
 
-    // print!("Part2 | ");
-    // print!("[{:.2?}] Sort: {}\n", e_p2, sort);
+    print!("Part2 | ");
+    print!("[{:.2?}] Sort: {}\n", e_p2, sort);
 
     Ok(())
 }
