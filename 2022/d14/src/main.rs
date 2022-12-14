@@ -17,16 +17,16 @@ fn read_input() -> Vec<String> {
     input
 }
 
-fn cave_push(from: &(u32,u32), cave: &mut HashSet<(u32,u32)>, fall: &mut HashMap<u32,u32>, cave_min: i32, cave_max: i32, cave_floor: u32, on_floor: u8) -> u8 {
+fn cave_push(from: &(u32,u32), cave: &mut HashSet<(u32,u32)>, fall: &mut HashMap<u32,u32>, cave_min: &i32, cave_max: &i32, cave_floor: &u32, on_floor: &u8) -> u8 {
     if cave.contains(from) {
         return USED;
     }
 
-    if from.1 > cave_floor {
-        return on_floor;
+    if from.1 > *cave_floor {
+        return *on_floor;
     }
 
-    if (from.0 as i32) < cave_min || (from.0 as i32) > cave_max {
+    if (from.0 as i32) < *cave_min || (from.0 as i32) > *cave_max {
         return FALL;
     }
 
@@ -112,7 +112,7 @@ fn part1(input: & Vec<String>) -> usize {
 
     while status != FALL {
         let predict_h = fall.get(&500).unwrap();
-        status  = cave_push(&(500,(*predict_h-1)), &mut cave, &mut fall, cave_min, cave_max, cave_floor, FALL);
+        status  = cave_push(&(500,predict_h-1), &mut cave, &mut fall, &cave_min, &cave_max, &cave_floor, &FALL);
         grains += 1;
     }
 
@@ -130,7 +130,7 @@ fn part2(input: & Vec<String>) -> usize {
 
     while !cave.contains(&(500,0)) {
         let predict_h = fall.get(&500).unwrap();
-        cave_push(&(500,*predict_h-1), &mut cave, &mut fall, cave_min, cave_max, cave_floor, USED);
+        cave_push(&(500,predict_h-1), &mut cave, &mut fall, &cave_min, &cave_max, &cave_floor, &USED);
         grains += 1;
     }
 
