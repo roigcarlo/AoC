@@ -2,13 +2,14 @@ use std::io::{self, prelude::*};
 use std::collections::HashMap;
 use std::time::Instant;
 
+use itertools::Itertools;
+
 struct Tunnel {
     valve: usize,
     exits: Vec<String>,
 }
 
 type Cave = HashMap<String, Tunnel>;
-type SynchroRift = HashMap<String, (Vec<u32>,Vec<String>)>;
 type SpatialRift = HashMap<(String,String), usize>;
 
 fn read_input() -> Vec<String> {
@@ -21,62 +22,34 @@ fn read_input() -> Vec<String> {
     input
 }
 
-fn fill_spatial_rift(cave: &Cave, a: &String, b: &String, s_rift: &mut SpatialRift) -> usize {
-    let src = std::cmp::min(a,b).to_string();
-    let dst = std::cmp::max(a,b).to_string();
+fn get_pairs(tokens: &Vec<String>) -> Vec<(String, String)> {
+    let mut res = Vec::new();
 
-    let key = (src.to_string(), dst.to_string());
-
-    // print!("key: {:?}",key);
-
-    if a >= b {
-        // println!(" Malformed Key");
-        usize::MAX
-    } else if a < b {
-        // println!(" Is Contained? {}", s_rift.contains_key(&key));
-        // let dist : usize = cave.get(b).unwrap().exits.iter().map(|x| fill_spatial_rift(cave,x,b,s_rift)).min().unwrap();
-        if !s_rift.contains_key(&key) {
-            // println!(" \t recursive call... {:?}", s_rift.keys());
-            let dist = cave.get(b).unwrap().exits.iter().map(|x| fill_spatial_rift(cave,x,b,s_rift)).min().unwrap();
-            s_rift.insert(key.clone(), 1+dist);
+    for i in 0..tokens.len()-1 {
+        for j in i+1..tokens.len() {
+            res.push((tokens[i].clone(), tokens[j].clone()));
         }
-        *s_rift.get(&key).unwrap()
-    } else {
-        usize::MAX   
+    }
+
+    res
+}
+
+fn fill_spatial_rift(cave: &Cave, at: &String, to: &String, d: &usize, s_rift: &mut SpatialRift) {
+    for b in cave.get(to).unwrap().exits.iter() {
+        let key = (at.to_string(),b.to_string());
+        if !s_rift.contains_key(&key) || s_rift.get(&key) > Some(d) {
+            *s_rift.entry(key.clone()).or_insert(*d) = *d;
+            fill_spatial_rift(cave, at, &b, &(d+1), s_rift);
+        }
     }
 }
 
-fn build_synchro_rift(cave: &Cave, period: usize) -> SynchroRift {
-    let mut t_rift: SynchroRift = HashMap::new();
-
-    t_rift
-}
-
-fn build_spatial_rift(cave: &Cave,) -> SpatialRift {
+fn build_spatial_rift(cave: &Cave) -> SpatialRift {
     let mut s_rift: SpatialRift = HashMap::new();
 
-    for (i,v) in cave {
-        for j in v.exits.iter() {
-            let src = String::min(i.to_string(),j.to_string()).to_string();
-            let dst = String::max(i.to_string(),j.to_string()).to_string();
-
-            s_rift.entry((src,dst)).or_insert(1);
-        } 
-    }
-
-    println!("s_rift: {:?}", s_rift);
-
-    for (i,v) in cave {
-        for j in cave.keys() {
-            // println!("== {} = {} ==", i, j);
-            fill_spatial_rift(cave, i, j, &mut s_rift);
-        } 
-    }
-
-    println!("s_rift: {:?}", s_rift);
-
-    for (k,v) in s_rift.clone() {
-        s_rift.insert((k.1,k.0),v);
+    for k in cave.keys() { 
+        s_rift.insert((k.to_string(),k.to_string()),0);
+        fill_spatial_rift(cave, &k.to_string(), &k.to_string(), &1, &mut s_rift);
     }
 
     s_rift
@@ -98,100 +71,121 @@ fn build_cave_system(input: &Vec<String>) -> Cave {
                 exits: cv_exits.to_vec()
             }
         );
-
-        println!("{:?}: {}: {:?}", valve_id, valve_tm, cv_exits);
     }
 
     cave_system
 }
 
-fn solve(cave: &Cave, left: &Vec<String>, s_rift: &SpatialRift, at: &String, current: &usize, limit: &usize, accum: &usize) -> usize {
-    // println!("Choriquiso, choriso y quiso... {:?}", left);
-    if left.is_empty() || current >= limit {
-        *accum
+fn solve1(cave: &Cave, left: &Vec<String>, s_rift: &SpatialRift, at: &String, current: &usize, limit: &usize, pre: &usize) -> usize {
+    
+    if left.is_empty() {
+        let my_press = cave.get(at).unwrap().valve;
+        let pre = pre + my_press * (limit-current);
+        pre
+    } else if current >= limit {
+        *pre
     } else {
         left.iter().map(|to| {
             let mut new_left = left.clone();
             let my_press = cave.get(at).unwrap().valve;
-            let new_accum = accum + my_press;
             let index = new_left.iter().position(|x| x == to).unwrap();
-            let dist_to_next = s_rift.get(&(at.to_string(),to.to_string())).unwrap()+1;
-
+            let dist_to_next = s_rift.get(&(at.to_string(),to.to_string())).unwrap() + 1;
+            
             new_left.remove(index);
-            // println!("\t sutamia {:?},{:?} <-- {:?} ({:?})", at, to, new_left,  &(s_rift.get(&(at.to_string(),to.to_string())))   );
-        
-            solve(&cave, &new_left, &s_rift, to, &(current + dist_to_next), limit, &new_accum)
+            let pre = pre + my_press * (limit-current);
+
+            solve1(&cave, &new_left, &s_rift, to, &(current + dist_to_next), limit, &pre)
         }).max().unwrap()
     }
 }
 
-fn part1(input: &Vec<String>) -> Option<u32> {
+fn part1(input: &Vec<String>) -> Option<usize> {
     let time_len = 30;
 
-    let cave   = build_cave_system(input);
-    let mut t_rift = build_synchro_rift(&cave, time_len);
+    let cave = build_cave_system(input);
     let mut s_rift = build_spatial_rift(&cave);
 
     let mut at = "AA";
 
     let left = cave.iter().filter(|(_,v)| v.valve != 0).map(|(k,_)| k.to_string()).collect::<Vec<String>>();
 
+    let debug_vector : Vec<(String, usize)> = Vec::new();
     let pressure = left.iter().map(|to| {
         let mut new_left = left.clone();
         let index = new_left.iter().position(|x| x == to).unwrap();
         new_left.remove(index);
-        solve(&cave, &new_left, &s_rift, to, &(1+s_rift.get(&(at.to_string(),to.to_string())).unwrap()), &30, &0)
+        solve1(&cave, &new_left, &s_rift, to, &(1+s_rift.get(&(at.to_string(),to.to_string())).unwrap()), &30, &0)
+        
     }).max();
 
-    println!("Ai que presion, que presion la vida... {:?}", pressure);
-
-    // println!("String lexicon {}", String::max("AA".to_string(),"BB".to_string()));
-    // println!("S-Rift: {:?}", s_rift);
-
-    // for key in cave.keys() {
-    //     rift.get_mut(&key)[time_len-1].0 = cave.get(&key).valve;
-    //     rift.get_mut(&key)[time_len-1].1 = cave.get(&key).valve = cave.keys().to_vec();
-    //     rift.get_mut(&key)[time_len-1].1.remove(key);
-    // }
-
-    // for i in (0..29).rev {
-    //     if i % 2 == 0 {
-    //         rift.get_mut(&key)[time_len] = cave.get(&key)[time_len+1];
-    //     } else {
-    //         rift.get_mut(&key)[time_len] = cave.get(&key)[time_len+1];
-    //     }
-    //     println!("Time {}:", i);
-    // }
-
-    Some(0)
+    pressure
 }
 
-fn part2(input: &Vec<String>) -> Option<u32> {
-    Some(0)
+fn part2(input: &Vec<String>) -> Option<usize> {
+    let time_len = 30;
+
+    let cave = build_cave_system(input);
+    let mut s_rift = build_spatial_rift(&cave);
+
+    let mut at = "AA";
+
+    let left = cave.iter().filter(|(_,v)| v.valve != 0).map(|(k,_)| k.to_string()).collect::<Vec<String>>();
+
+    let mut max_press = 0;
+
+    for i in 1..=left.len()/2 {
+        let perms = left.iter().combinations(i);
+        println!("{:?}", perms);
+        
+        for left_perm in perms {
+            let elf: Vec<String> = left_perm.iter().map(|s|s.clone().into()).collect();
+            let ele: Vec<String> = left.iter().filter(|x| elf.iter().position(|y| y == *x).is_none()).map(|s|s.clone().into()).collect();
+
+            let elf_p = elf.iter().map(|to| {
+                let mut new_left = elf.clone();
+                let index = new_left.iter().position(|x| x == to).unwrap();
+                new_left.remove(index);
+                solve1(&cave, &new_left, &s_rift, to, &(1+s_rift.get(&(at.to_string(),to.to_string())).unwrap()), &26, &0)
+                
+            }).max().unwrap();
+
+            let ele_p = ele.iter().map(|to| {
+                let mut new_left = ele.clone();
+                let index = new_left.iter().position(|x| x == to).unwrap();
+                new_left.remove(index);
+                solve1(&cave, &new_left, &s_rift, to, &(1+s_rift.get(&(at.to_string(),to.to_string())).unwrap()), &26, &0)
+                
+            }).max().unwrap();
+
+            max_press = usize::max(max_press, elf_p + ele_p);
+        }
+    }
+
+    Some(max_press)
 }
 
 fn main() -> io::Result<()> {
 
-    // let t_p0= Instant::now();
-    // let input = read_input();
-    // let e_p0 = t_p0.elapsed();
+    let t_p0= Instant::now();
+    let input = read_input();
+    let e_p0 = t_p0.elapsed();
 
-    // let t_p1 = Instant::now();
-    // let list = part1(&input);
-    // let e_p1 = t_p1.elapsed();
+    let t_p1 = Instant::now();
+    let list = part1(&input);
+    let e_p1 = t_p1.elapsed();
 
-    // let t_p2 = Instant::now();
-    // let sort = part2(&input);
-    // let e_p2 = t_p2.elapsed();
+    let t_p2 = Instant::now();
+    let sort = part2(&input);
+    let e_p2 = t_p2.elapsed();
 
-    // print!("Part0 | ");
-    // print!("[{:.2?}] I/O\n", e_p0);
+    print!("Part0 | ");
+    print!("[{:.2?}] I/O\n", e_p0);
 
-    // print!("Part1 | ");
-    // print!("[{:.2?}] List: {}\n", e_p1, list.unwrap());
+    print!("Part1 | ");
+    print!("[{:.2?}] List: {}\n", e_p1, list.unwrap());
 
-    // print!("Part2 | ");
-    // print!("[{:.2?}] Sort: {}\n", e_p2, sort.unwrap());
+    print!("Part2 | ");
+    print!("[{:.2?}] Sort: {}\n", e_p2, sort.unwrap());
 
     Ok(())
 }
