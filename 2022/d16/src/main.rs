@@ -164,7 +164,7 @@ impl Problem for CaveSystem {
                 h_sort(self, &mut ele);
 
                 self.c_max = 0;
-                let elf_p = elf.iter().map(|to| {
+                elf.iter().map(|to| {
                     let mut new_left = elf.clone();
                     let index = new_left.iter().position(|x| x == to).unwrap();
                     new_left.remove(index);

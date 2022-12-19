@@ -27,7 +27,7 @@ impl RRange {
             (x,usize::MAX) => {
                 self.range[x].1 = new_item.1;
             }
-            (usize::MAX, y) => {
+            (usize::MAX, _) => {
                 unreachable!("Eldritch condition.");
             }
             (x,y) if x == y => {
@@ -59,9 +59,6 @@ impl RRange {
                 unreachable!("Eldritcher condition.");
             }
         }
-
-        // println!("Inserted: {:?}", new_item);
-        // println!("\t {:?}", self.range);
     }
 
     fn get_filled(&mut self) -> i32 {
@@ -103,27 +100,26 @@ fn build_rows(input: &Vec<String>) -> Vec<Vec<i32>> {
 }
 
 fn part1(input: &Vec<String>, at_row: i32) -> i32 {
-    solve1(input, at_row, i32::MIN, i32::MAX).get_filled()
+    let ranges_in = build_rows(&input);
+    solve(&ranges_in, at_row, i32::MIN, i32::MAX).get_filled()
 }
 
 fn part2(input: &Vec<String>) -> u64 {
+    let ranges_in = build_rows(&input);
     let mut answer : u64 = 0;
 
-    for i in 0..1 {
-        let r = solve1(input, i, 0, 4000000);
+    for i in 0..4000000 {
+        let r = solve(&ranges_in, i, 0, 4000000);
         if r.range.len() == 2 {
             answer = (r.range[0].1 as u64 +1) * 4000000 + (i as u64);
-            println!("{} {} {:?}", i, answer, r.range);
         }
     }
 
-    // Too Slow
     answer
 }
 
-fn solve1(input: &Vec<String>, at_row: i32, minc: i32, maxc: i32) -> RRange {
+fn solve(ranges_in: &Vec<Vec<i32>>, at_row: i32, minc: i32, maxc: i32) -> RRange {
     let mut ranges_at = RRange { range : Vec::new(), exlst: Vec::new() };
-    let ranges_in = build_rows(&input);
 
     for coords in ranges_in {
         let sensor = (coords[0],coords[1]);
@@ -131,61 +127,17 @@ fn solve1(input: &Vec<String>, at_row: i32, minc: i32, maxc: i32) -> RRange {
     
         let ex_len = i32::abs(sensor.0 - beacon.0) + i32::abs(sensor.1 - beacon.1);
 
-        let mut len = 0;
-        let mut ori = 0;
-        let mut end = 0;
-
         if at_row <= sensor.1 && at_row >= (sensor.1 - ex_len) {
-            len = sensor.1 - at_row;
-            ori = sensor.0 - i32::abs(ex_len - len);
-            end = sensor.0 + i32::abs(ex_len - len);
+            let len = sensor.1 - at_row;
+            let ori = sensor.0 - i32::abs(ex_len - len);
+            let end = sensor.0 + i32::abs(ex_len - len);
             ranges_at.add_range((i32::max(i32::min(ori,maxc),minc),i32::max(i32::min(end,maxc),minc)));
         } 
         
         if at_row >= sensor.1 && at_row <= (sensor.1 + ex_len) {
-            len = at_row - sensor.1;
-            ori = sensor.0 - i32::abs(ex_len - len);
-            end = sensor.0 + i32::abs(ex_len - len);
-            ranges_at.add_range((i32::max(i32::min(ori,maxc),minc),i32::max(i32::min(end,maxc),minc)));
-        }
-
-        if sensor.1 == at_row {
-            ranges_at.exlst.push(sensor.0);
-        }
-
-        if beacon.1 == at_row {
-            ranges_at.exlst.push(beacon.0);
-        }
-    }
-
-    ranges_at
-}
-
-fn solve2(input: &Vec<String>, at_row: i32, minc: i32, maxc: i32) -> RRange {
-    let mut ranges_at = RRange { range : Vec::new(), exlst: Vec::new() };
-    let ranges_in = build_rows(&input);
-
-    for coords in ranges_in {
-        let sensor = (coords[0],coords[1]);
-        let beacon = (coords[2],coords[3]);
-    
-        let ex_len = i32::abs(sensor.0 - beacon.0) + i32::abs(sensor.1 - beacon.1);
-
-        let mut len = 0;
-        let mut ori = 0;
-        let mut end = 0;
-
-        if at_row <= sensor.1 && at_row >= (sensor.1 - ex_len) {
-            len = sensor.1 - at_row;
-            ori = sensor.0 - i32::abs(ex_len - len);
-            end = sensor.0 + i32::abs(ex_len - len);
-            ranges_at.add_range((i32::max(i32::min(ori,maxc),minc),i32::max(i32::min(end,maxc),minc)));
-        } 
-        
-        if at_row >= sensor.1 && at_row <= (sensor.1 + ex_len) {
-            len = at_row - sensor.1;
-            ori = sensor.0 - i32::abs(ex_len - len);
-            end = sensor.0 + i32::abs(ex_len - len);
+            let len = at_row - sensor.1;
+            let ori = sensor.0 - i32::abs(ex_len - len);
+            let end = sensor.0 + i32::abs(ex_len - len);
             ranges_at.add_range((i32::max(i32::min(ori,maxc),minc),i32::max(i32::min(end,maxc),minc)));
         }
 
