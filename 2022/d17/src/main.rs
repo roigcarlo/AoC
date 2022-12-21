@@ -2,6 +2,8 @@ use std::io::{self, prelude::*};
 use std::time::Instant;
 use std::collections::HashMap;
 
+type Cache = HashMap<(usize,Vec<u8>),(usize,usize)>;
+
 fn read_input() -> Vec<String> {
     let mut input: Vec<String> = Vec::new();
     
@@ -32,10 +34,7 @@ fn get_piece(id_r: usize) -> Vec<u8> {
 }
 
 fn extned_chunk(tower: &mut Vec<u8>, size: usize) {
-    // Change this please
-    for _ in 0..size {
-        tower.push(0);
-    }
+    tower.extend_from_slice(&vec![0; size][..]);
 }
 
 fn do_step(tower: &mut Vec<u8>, seq: &Vec<char>, id_r: &mut usize, id_s: &mut usize, t_max: &mut usize) {
@@ -49,25 +48,32 @@ fn do_step(tower: &mut Vec<u8>, seq: &Vec<char>, id_r: &mut usize, id_s: &mut us
     let mut y_block = false;
     while !y_block {
         let mut x_block = false;
+        let token = seq[*id_s];
 
-        // Check if movable sideways
-        for j in 0..p.len() {
-            match seq[*id_s] {
-                '<' if !(p[j] < 0b1000000 && ((p[j] << 1) & tower[id_y+j]) == 0) => { x_block = true; } 
-                '>' if !(p[j] % 2 == 0    && ((p[j] >> 1) & tower[id_y+j]) == 0) => { x_block = true; } 
-                _   => {}
-            }
-        }
+        match token {
+            '<' => {
+                for j in 0..p.len() {
+                    if !(p[j] < 0b1000000 && ((p[j] << 1) & tower[id_y+j]) == 0) { x_block = true; } 
+                }
 
-        // Move sideways
-        if !x_block {
-            for j in 0..p.len() {
-                p[j] = match seq[*id_s] {
-                    '<' => p[j] << 1,
-                    '>' => p[j] >> 1,
-                    _   => panic!("Eldritch operator")
+                if !x_block {
+                    for j in 0..p.len() {
+                        p[j] = p[j] << 1;
+                    }
                 }
             }
+            '>' => {
+                for j in 0..p.len() {
+                    if !(p[j] % 2 == 0    && ((p[j] >> 1) & tower[id_y+j]) == 0) { x_block = true; }
+                }
+
+                if !x_block {
+                    for j in 0..p.len() {
+                        p[j] = p[j] >> 1;
+                    }
+                }
+            }
+            _   => panic!("Eldritch token"),
         }
 
         *id_s = ( *id_s + 1 ) % seq.len();
@@ -84,10 +90,11 @@ fn do_step(tower: &mut Vec<u8>, seq: &Vec<char>, id_r: &mut usize, id_s: &mut us
                 tower[id_y+j] = tower[id_y+j] | p[j];
             }
             *t_max = usize::max(*t_max, id_y + p.len());
+        } else {
+            // Move down
+            id_y -= 1;
         }
 
-        // Move down
-        id_y -= 1;
     }
 
     *id_r = ( *id_r + 1 ) % 5;
@@ -106,7 +113,7 @@ fn solve(input: &Vec<String>, limit: usize) -> usize {
         do_step(&mut tower, &seq, &mut id_r, &mut id_s, &mut t_max);
     }
     
-    let mut perms: HashMap<(usize,Vec<u8>),(usize,usize)> = HashMap::new();
+    let mut perms: Cache = Cache::new();
 
     for _ in 0..t_max {
         perms.insert((id_s,tower[0..t_max].to_vec()),(t_max,5));
@@ -135,8 +142,8 @@ fn solve(input: &Vec<String>, limit: usize) -> usize {
     let ini_chunk = limit - at_beg.1;
     let cyc_chunk = ini_chunk / (at_end.1 - at_beg.1);
 
-    let ini_size = at_beg.0;
-    let cyc_size = cyc_chunk * (at_end.0 - at_beg.0);
+    let ini_size  = at_beg.0;
+    let cyc_size  = cyc_chunk * (at_end.0 - at_beg.0);
 
     tower = tower[t_max-c_max..t_max].to_vec();
 
