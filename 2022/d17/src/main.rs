@@ -38,13 +38,6 @@ fn extned_chunk(tower: &mut Vec<u8>, size: usize) {
     }
 }
 
-fn pretty_print(tower: &Vec<u8>, at: usize, to: usize) {
-    for i in (at..to).rev() {
-        println!("|{:07b}|", tower[i]);
-    }
-    println!("+--------+");
-}
-
 fn do_step(tower: &mut Vec<u8>, seq: &Vec<char>, id_r: &mut usize, id_s: &mut usize, t_max: &mut usize) {
     let mut id_y = *t_max + 3;
     let mut p = get_piece(*id_r);
@@ -119,9 +112,8 @@ fn solve(input: &Vec<String>, limit: usize) -> usize {
         perms.insert((id_s,tower[0..t_max].to_vec()),(t_max,5));
     }
 
-    let mut c_max = t_max;
+    let c_max = t_max;
     let mut cycled = false;
-    let mut cycle = vec![];
     let mut piece = 5;
     let mut at_end = (0,0);
 
@@ -129,10 +121,8 @@ fn solve(input: &Vec<String>, limit: usize) -> usize {
         do_step(&mut tower, &seq, &mut id_r, &mut id_s, &mut t_max);
         piece += 1;
         
-        let mut local: Vec<u8> = Vec::new();
         if perms.contains_key(&(id_s,tower[t_max-c_max..t_max].to_vec())) { 
             cycled = true;
-            cycle = tower[t_max-c_max..t_max].to_vec();
             at_end = (t_max,piece)
         } else {
             perms.insert((id_s,tower[t_max-c_max..t_max].to_vec()),(t_max,piece));
