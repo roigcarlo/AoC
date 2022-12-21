@@ -59,7 +59,6 @@ fn part2(input: &Vec<String>) -> usize {
     front.push_back((0,0,0));
     air.insert((0,0,0));
 
-    let min = chonks.iter().map(|(x,y,z)| u16::min(u16::max(*x,*y),*z)).min().unwrap() - 1;
     let max = chonks.iter().map(|(x,y,z)| u16::max(u16::max(*x,*y),*z)).max().unwrap() + 2;
 
     while front.len() > 0 {
