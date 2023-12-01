@@ -23,4 +23,4 @@ add_executable(d01 "d01/main.cpp")
 
 install(TARGETS d01 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 
-# target_link_libraries(TestModules PUBLIC test_module)
+target_link_libraries(d01 PUBLIC tbb)
