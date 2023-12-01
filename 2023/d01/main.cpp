@@ -21,7 +21,7 @@ auto read(char * filename) {
     return std::move(lines);
 }
 
-auto find_str_num(const char * buffer,const std::array<std::string, 9> & check_list) {
+auto find_str_num(const char * buffer, const std::array<std::string, 9> & check_list) {
     std::string chunk(buffer);
     std::array<uint, 9> found_num;
 
@@ -30,9 +30,10 @@ auto find_str_num(const char * buffer,const std::array<std::string, 9> & check_l
     return std::make_tuple(std::min_element(found_num.begin(), found_num.end()) - found_num.begin(), std::move(found_num));
 }
 
-std::size_t part1(const std::vector<std::string> & filevector) {    
+std::size_t part1(const std::vector<std::string> & filevector) {
+    thread_local std::size_t f;
+
     auto n_find = [&](const std::string & line) -> std::size_t {
-        std::size_t f;
         if(!sscanf(line.c_str(), "%*[a-z]%1zd", &f)) sscanf(line.c_str(), "%1zd", &f);
         return f;
     };
@@ -64,7 +65,7 @@ std::size_t part2(const std::vector<std::string> & filevector) {
             sscanf(line.c_str(), "%1zd", &f);
         } else {
             std::tie(found_pos, found_num) = find_str_num(buffer, check_list);
-            if (found_num[found_pos] != uint(-1)) { f = found_pos+1; }
+            f = found_num[found_pos] != uint(-1) ? found_pos+1 : f;
         }
 
         return f;
