@@ -16,7 +16,7 @@ jobs:
     - name: Aoc 2023 - Deps
       shell: bash
       run: |
-        sudo apt-get install ninja -qq
+        sudo apt-get install ninja-build -qq
 
     - name: AoC 2023 - Build
       shell: bash
