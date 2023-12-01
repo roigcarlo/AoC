@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Aoc 2023 - Deps
+      shell: bash
+      run: |
+        apt-get install ninja -qq
+
     - name: AoC 2023 - Build
       shell: bash
       run: |
