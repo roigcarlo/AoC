@@ -13,10 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # - name: Aoc 2023 - Deps
-    #   shell: bash
-    #   run: |
-    #     sudo apt-get install ninja-build -qq
+    - name: Aoc 2023 - Deps
+      shell: bash
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x ./llvm.sh
+        sudo ./llvm.sh 17
 
     - name: AoC 2023 - Build
       shell: bash
