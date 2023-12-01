@@ -26,19 +26,22 @@ std::size_t part1(std::fstream& file) {
     file.clear();
     file.seekg(0);
 
-    std::size_t f, l, r1 = 0, r2 = 0;
+    std::size_t n, f, r = 0;
 
     while(file >> line) {
-        auto es = 'z' + line + 'z';
-        sscanf(es.c_str(), "%*[a-z]%1zd", &f);
-        std::reverse(es.begin(), es.end());
-        sscanf(es.c_str(), "%*[a-z]%1zd", &l);
+        n = sscanf(line.c_str(), "%*[a-z]%1zd", &f);
+        if(!n) sscanf(line.c_str(), "%1zd", &f);
+        
+        r += f * 10;
 
-        r1 += f;
-        r2 += l;
+        std::reverse(line.begin(), line.end());
+        n = sscanf(line.c_str(), "%*[a-z]%1zd", &f);
+        if(!n) sscanf(line.c_str(), "%1zd", &f);
+
+        r += f;
     }
 
-    return r1 * 10 + r2;
+    return r;
 }
 
 std::size_t part2(std::fstream& file) {
@@ -47,31 +50,33 @@ std::size_t part2(std::fstream& file) {
     file.clear();
     file.seekg(0);
 
-    std::size_t f, l, r1 = 0, r2 = 0;
+    std::size_t n, r = 0;
 
     std::size_t found_pos;
     std::array<uint, 9> found_num;
 
+    auto n_find = [&](std::string this_line, char * buffer, const std::array<std::string, 9> & check_list) -> std::size_t {
+        std::size_t f;
+        n = sscanf(this_line.c_str(), "%[a-z]%1zd", buffer, &f);
+        if(!n) { 
+            sscanf(this_line.c_str(), "%1zd", &f);
+        } else {
+            std::tie(found_pos, found_num) = find_str_num(buffer, check_list);
+            if (found_num[found_pos] != uint(-1)) { f = found_pos+1; }
+        }
+
+        return f;
+    };
+
+    char * fckelfs = new char[2048];
+    
     while(file >> line) {
-        auto es = 'z' + line + 'z';
-        char * fckelfs = new char[es.length() + 1];
-
-        sscanf(es.c_str(), "%[a-z]%1zd", fckelfs, &f);
-        std::tie(found_pos, found_num) = find_str_num(fckelfs, f_numbers);
-
-        if (found_num[found_pos] != uint(-1)) { f = found_pos+1; }
-
-        std::reverse(es.begin(), es.end());
-        sscanf(es.c_str(), "%[a-z]%1zd", fckelfs, &l);
-        std::tie(found_pos, found_num) = find_str_num(fckelfs, r_numbers);
-
-        if (found_num[found_pos] != uint(-1)) { l = found_pos+1; }
-
-        r1 += f;
-        r2 += l;
+        r += n_find(line, fckelfs, f_numbers) * 10;
+        std::reverse(line.begin(), line.end());
+        r += n_find(line, fckelfs, r_numbers);
     }
 
-    return r1 * 10 + r2;
+    return r;
 }
 
 int main (int argc, char** argv) {
