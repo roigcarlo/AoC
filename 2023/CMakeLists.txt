@@ -19,6 +19,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # add_executable(TestModules "test/test.cpp")
 
-add_executable(D01 "d01/main.cpp")
+add_executable(main "d01/main.cpp")
 
 # target_link_libraries(TestModules PUBLIC test_module)
