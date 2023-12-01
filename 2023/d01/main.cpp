@@ -12,11 +12,11 @@ auto read(char * filename) {
     std::fstream file(filename);
     std::vector<std::string> lines;
 
-    std::copy_if(
+    std::copy(
         std::istream_iterator<std::string>(file),
         std::istream_iterator<std::string>(),
-        std::back_inserter(lines),
-    [](const std::string& t) { return t != "-1"; });
+        std::back_inserter(lines)
+    );
 
     return std::move(lines);
 }
