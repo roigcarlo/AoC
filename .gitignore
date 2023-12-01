@@ -11,3 +11,4 @@ Cargo.lock
 **/*.rs.bk
 
 2023/build/*
+2023/build-local.sh
