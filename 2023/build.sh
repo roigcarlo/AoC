@@ -5,4 +5,4 @@ cmake -Wno-dev -B"build" \
 -DCMAKE_BUILD_TYPE=Release \
 .
 
-cmake --build "build"
+cmake --build "build" --target install

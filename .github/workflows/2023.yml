@@ -32,6 +32,6 @@ jobs:
         cd ${GITHUB_WORKSPACE}/2023/
         for d in ${GITHUB_WORKSPACE}/2023/d*/ ; do
           echo "Running day $(basename ${d})"
-          ${GITHUB_WORKSPACE}/2023/build/$(basename ${d})/main $(basename ${d})/data
+          bin/$(basename ${d}) $(basename ${d})/data
           echo
         done
