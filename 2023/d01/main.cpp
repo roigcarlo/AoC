@@ -90,8 +90,8 @@ int main (int argc, char** argv) {
     auto t3 = high_resolution_clock::now();
 
     std::cout << "I/O   : " << duration_cast<microseconds>(t1 - t0).count() << std::endl;
-    std::cout << "Part 1: " << duration_cast<microseconds>(t2 - t1).count() / 1000 << "us " << r1 << std::endl;
-    std::cout << "Part 2: " << duration_cast<microseconds>(t3 - t2).count() / 1000 << "us " << r2 << std::endl;
+    std::cout << "Part 1: " << duration_cast<microseconds>(t2 - t1) / 1000 << " " << r1 << std::endl;
+    std::cout << "Part 2: " << duration_cast<microseconds>(t3 - t2) / 1000 << " " << r2 << std::endl;
 
     return 0;
 }
