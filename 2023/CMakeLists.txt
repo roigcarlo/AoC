@@ -18,4 +18,6 @@ target_sources(test_module
 
 add_executable(TestModules "test/test.cpp")
 
+add_executable(D01 "d01/main.cpp")
+
 target_link_libraries(TestModules PUBLIC test_module)
