@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Aoc 2023 - Deps
-      shell: bash
-      run: |
-        sudo apt-get install ninja-build -qq
+    # - name: Aoc 2023 - Deps
+    #   shell: bash
+    #   run: |
+    #     sudo apt-get install ninja-build -qq
 
     - name: AoC 2023 - Build
       shell: bash
