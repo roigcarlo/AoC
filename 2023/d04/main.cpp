@@ -13,54 +13,52 @@
 
 using std::operator""sv;
 
-std::size_t process_line(const std::string & line) {
+int process_line(const std::string & line) {
     auto p_line = line 
                 | std::views::split(" "sv) 
+                | std::views::transform([](const auto & v) { return std::string_view(v.begin(), v.end()); })
+                | std::views::filter([](const auto & sv){return sv != ""sv;}) 
                 | std::views::drop(2)
-                | std::views::filter([](const auto & v){
-                    return std::string_view(v.begin(), v.end()) != ""sv;
-                });
+                ;
 
     auto l_mine = std::ranges::find_if(p_line, [](const auto & v){
-        return std::string_view(v.begin(), v.end()) == "|";
+        return v == "|"sv;
     });
 
     auto winners_range = std::ranges::subrange(std::ranges::begin(p_line), l_mine);
-    auto players_range = std::ranges::subrange(l_mine, std::ranges::end(p_line))
-                       | std::views::drop(1);
+    auto players_range = std::ranges::subrange(std::next(l_mine), std::ranges::end(p_line));
     
     std::unordered_set<std::string_view> winners;
 
     for(auto winner: winners_range) {
-        winners.insert(std::string_view(winner.begin(), winner.end()));
+        winners.insert(winner);
     }
 
     return std::transform_reduce(
         players_range.begin(), players_range.end(),
         0, std::plus<>(),
         [&winners](const auto & c) { 
-            return winners.contains(std::string_view(c.begin(), c.end())); 
+            return winners.contains(c); 
         }
     );
 }
 
 std::size_t part1(const std::vector<std::string> & fv) {
     return std::transform_reduce(
+        std::execution::par_unseq,
         fv.begin(), fv.end(),
         0, std::plus<int>(),
         [](const std::string & line) -> int {
-            auto matches = process_line(line);
-            return matches ? std::pow(2, matches-1) : 0;
+            auto x = process_line(line);
+            return std::pow(2, x-1);
         }
     );
 }
 
 std::size_t part2(const std::vector<std::string> & fv) {
-    std::vector<std::size_t> apps(fv.size(), 0);
+    std::vector<std::size_t> apps(fv.size(), 1);
 
     for(std::size_t i = 0; i < fv.size(); i++) {
-        apps[i] += 1;
-
         if(auto matches = process_line(fv[i])) {
             std::ranges::for_each(
                 apps.begin() + i + 1, apps.begin() + i + matches + 1,
@@ -69,7 +67,7 @@ std::size_t part2(const std::vector<std::string> & fv) {
         }
     }
 
-    return std::transform_reduce(apps.begin(), apps.end(), 0, std::plus<>(), [](const auto & v) { return v; });
+    return std::accumulate(apps.begin(), apps.end(), 0, std::plus<>());
 }
 
 int main (int argc, char** argv) {
