@@ -70,10 +70,31 @@ std::size_t part2(const std::vector<std::string> & fv) {
     return std::accumulate(apps.begin(), apps.end(), 0, std::plus<>());
 }
 
+std::size_t part2b(std::vector<std::string> fv) {
+    std::vector<std::size_t> apps(fv.size(), 1);
+
+    std::for_each(
+        std::execution::par_unseq,
+        fv.begin(), fv.end(),
+        [](std::string & line) {
+            line = std::to_string(process_line(line));
+        }
+    );
+
+    for(std::size_t i = 0; i < fv.size(); i++) {
+        std::ranges::for_each(
+            apps.begin() + i + 1, apps.begin() + i + std::stoi(fv[i]) + 1,
+            [&i, &apps](std::size_t & v) { v += apps[i]; }
+        );
+    }
+
+    return std::reduce(apps.begin(), apps.end());
+}
+
 int main (int argc, char** argv) {
     auto [inpt, io_time] = Elfperf::execute([&argv](){ return Elfio::read(argv[1], Elfio::Mode::Snow);});
     auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
-    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
+    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2b(inpt); }, 1000);
 
     std::cout << "I/O   : " << io_time << std::endl;
     std::cout << "Part 1: " << p1_time << " " << res1 << std::endl;
