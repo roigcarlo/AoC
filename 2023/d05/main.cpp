@@ -133,7 +133,7 @@ std::size_t part1(const std::vector<std::string> & fv) {
     return *std::min_element(seeds.begin(), seeds.end());
 }
 
-std::size_t part2(std::vector<std::string> fv) {
+std::size_t part2(const std::vector<std::string> & fv) {
     auto farm = build_farm(fv);
     auto seeds_view = fv[0] 
                     | std::views::split(" "sv) 
