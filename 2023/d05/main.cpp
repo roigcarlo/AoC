@@ -61,17 +61,15 @@ long traverse_farm(int level, long v, const TFarm & farm) {
 
 template<class TFarm>
 long traverse_farm_range(int level, std::pair<long, long> v, const TFarm & farm) {
-
-    if (level == 7) 
-        return std::get<0>(v);
+    if (level == 7) return std::get<0>(v);
 
     std::vector<long> this_level(farm[level].size(), std::numeric_limits<long>::max());
     std::vector<std::pair<long,long>> value_ranges;
 
+    auto itr_rn = 0;
+
     auto itr_dw = std::get<0>(v);
     auto itr_up = std::min(std::get<1>(v), std::get<1>(farm[level][0]));
-
-    auto itr_rn = 0;
 
     // Ranges below unchanged
     if (itr_dw < itr_up) {
@@ -84,14 +82,10 @@ long traverse_farm_range(int level, std::pair<long, long> v, const TFarm & farm)
         itr_up = std::min(std::get<1>(v), std::get<1>(farm[level][itr_rn]) + std::get<2>(farm[level][itr_rn]));
 
         if (itr_dw < itr_up) {
-            // std::cout << "\t" << "B(" << itr_rn << ") - inserting_range: " << itr_dw << " " << itr_up << std::endl;
-
-            if (itr_dw < itr_up) {
-                value_ranges.emplace_back(std::make_pair(
-                    itr_dw - std::get<1>(farm[level][itr_rn]) + std::get<0>(farm[level][itr_rn]), 
-                    itr_up - std::get<1>(farm[level][itr_rn]) + std::get<0>(farm[level][itr_rn])
-                ));
-            }
+            value_ranges.emplace_back(std::make_pair(
+                itr_dw - std::get<1>(farm[level][itr_rn]) + std::get<0>(farm[level][itr_rn]), 
+                itr_up - std::get<1>(farm[level][itr_rn]) + std::get<0>(farm[level][itr_rn])
+            ));
         }
     }
 
@@ -118,7 +112,10 @@ long traverse_farm_range(int level, std::pair<long, long> v, const TFarm & farm)
 
 std::size_t part1(const std::vector<std::string> & fv) {
     auto farm = build_farm(fv);
-    auto seeds_view = fv[0] | std::views::split(" "sv) | std::ranges::views::drop(1) | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
+    auto seeds_view = fv[0] 
+                    | std::views::split(" "sv) 
+                    | std::ranges::views::drop(1) 
+                    | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
 
     std::vector<long> seeds;
     std::copy(
@@ -138,7 +135,10 @@ std::size_t part1(const std::vector<std::string> & fv) {
 
 std::size_t part2(std::vector<std::string> fv) {
     auto farm = build_farm(fv);
-    auto seeds_view = fv[0] | std::views::split(" "sv) | std::ranges::views::drop(1) | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
+    auto seeds_view = fv[0] 
+                    | std::views::split(" "sv) 
+                    | std::ranges::views::drop(1) 
+                    | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
 
     std::vector<long> seeds;
     std::copy(
@@ -148,7 +148,7 @@ std::size_t part2(std::vector<std::string> fv) {
 
     std::vector<std::pair<long, long>> seed_ranges;
 
-    for(int i = 0; i < seeds.size() / 2; i++) {
+    for (int i = 0; i < seeds.size() / 2; i++) {
         seed_ranges.emplace_back(std::make_pair(seeds[i * 2], seeds[i * 2] + seeds[i * 2 + 1]));
     }
 
@@ -165,8 +165,8 @@ std::size_t part2(std::vector<std::string> fv) {
 
 int main (int argc, char** argv) {
     auto [inpt, io_time] = Elfperf::execute([&argv](){ return Elfio::read(argv[1], Elfio::Mode::Snow);});
-    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1);
-    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1);
+    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
+    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
 
     std::cout << "I/O   : " << io_time << std::endl;
     std::cout << "Part 1: " << p1_time << " " << res1 << std::endl;
