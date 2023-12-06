@@ -2,8 +2,8 @@
 #include <ranges>
 #include <cstdio>
 #include <string>
-#include <execution>
 #include <numeric>
+#include <execution>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -12,30 +12,34 @@
 #include "elf_report.h"
 
 std::size_t part1(const std::vector<std::string> & fv) {
-    std::regex regexp("[0-9]+"); 
     std::unordered_set symbols{'*', '$', '#', '+', '/', '@', '&', '%', '!', '?', '^', '~', '<', '>', '=', '|', '(', ')', '[', ']', '{', '}', ',', ':', ';', '-', '_', '`', '\'', '"'};
 
     std::size_t r = 0;
     for(std::size_t l = 0; l < fv.size(); l++) {
-        for (std::sregex_iterator match = std::sregex_iterator(fv[l].begin(), fv[l].end(), regexp); match != std::sregex_iterator(); ++match) {
-            std::size_t orr = r;
-            int mp = match->position();
-            auto ms = match->str();
-            
-            auto back = std::max(mp - 1, 0);
-            auto forw = std::min(mp + ms.size() + 1, fv[l].size());
+        for(
+            auto beg = std::ranges::find_if(fv[l].begin(), fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+                 end = std::ranges::find_if(beg+1,         fv[l].end(), [](const auto & e){return !std::isdigit(e);});
+            beg < fv[l].end();
+            beg = std::ranges::find_if(end+1, fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+            end = std::ranges::find_if(beg+1, fv[l].end(), [](const auto & e){return !std::isdigit(e);})
+        ) {
+            int mp = beg - fv[l].begin();
+            int ms = std::stoi(std::string(beg, end));
 
-            if (orr == r && back > 0 && symbols.contains(fv[l][back])) {
-                r += std::stoi(ms);
+            auto back = std::max(mp - 1, 0);
+            auto forw = std::min(mp + static_cast<unsigned long>(std::abs(std::distance(beg, end))) + 1, fv[l].size());
+
+            if (back > 0 && symbols.contains(fv[l][back])) {
+                r += ms;
             }
-            if (orr == r && forw < (fv[l].size() - 1) && symbols.contains(fv[l][forw-1])) {
-                r += std::stoi(ms);
+            else if (forw < (fv[l].size() - 1) && symbols.contains(fv[l][forw-1])) {
+                r += ms;
             }
-            if (orr == r && l > 0 && std::any_of(fv[l-1].begin()+back, fv[l-1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
-                r += std::stoi(ms);
+            else if (l > 0 && std::any_of(fv[l-1].begin()+back, fv[l-1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
+                r += ms;
             }
-            if (orr == r && l < fv.size()-1 && std::any_of(fv[l+1].begin()+back, fv[l+1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
-                r += std::stoi(ms);
+            else if (l < fv.size()-1 && std::any_of(fv[l+1].begin()+back, fv[l+1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
+                r += ms;
             }
         }
     }
@@ -44,34 +48,39 @@ std::size_t part1(const std::vector<std::string> & fv) {
 }
 
 std::size_t part2(const std::vector<std::string> & fv) {
-    std::regex regexp("[0-9]+"); 
     std::unordered_map<int,std::unordered_set<int>> gears;
 
     for(std::size_t l = 0; l < fv.size(); l++) {
-        for (std::sregex_iterator match = std::sregex_iterator(fv[l].begin(), fv[l].end(), regexp); match != std::sregex_iterator(); ++match) {
-            int mp = match->position();
-            auto ms = match->str();
-            
+        for(
+            auto beg = std::ranges::find_if(fv[l].begin(), fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+                 end = std::ranges::find_if(beg+1,         fv[l].end(), [](const auto & e){return !std::isdigit(e);});
+            beg < fv[l].end();
+            beg = std::ranges::find_if(end+1, fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+            end = std::ranges::find_if(beg+1, fv[l].end(), [](const auto & e){return !std::isdigit(e);})
+        ) {
+            int mp = beg - fv[l].begin();
+            int ms = std::stoi(std::string(beg, end));
+
             auto back = std::max(mp - 1, 0);
-            auto forw = std::min(mp + ms.size() + 1, fv[l].size());
+            auto forw = std::min(mp + static_cast<unsigned long>(std::abs(std::distance(beg, end))) + 1, fv[l].size());
 
             if (back > 0 && fv[l][back] == '*') {
-                gears[l*fv[l].size()+back].insert(std::stoi(ms));
+                gears[l*fv[l].size()+back].insert(ms);
             }
             if (forw < (fv[l].size() - 1) && fv[l][forw-1] == '*') {
-                gears[l*fv[l].size()+forw-1].insert(std::stoi(ms));
+                gears[l*fv[l].size()+forw-1].insert(ms);
             }
             if (l > 0) {
                 for (std::size_t i = back; i < forw; i++) {
                     if (fv[l-1][i] == '*') {
-                        gears[(l-1)*fv[l-1].size()+i].insert(std::stoi(ms));
+                        gears[(l-1)*fv[l-1].size()+i].insert(ms);
                     }
                 }
             }
             if (l < fv.size()-1) {
                 for (std::size_t i = back; i < forw; i++) {
                     if (fv[l+1][i] == '*') {
-                        gears[(l+1)*fv[l+1].size()+i].insert(std::stoi(ms));
+                        gears[(l+1)*fv[l+1].size()+i].insert(ms);
                     }
                 }
             }
@@ -91,8 +100,8 @@ std::size_t part2(const std::vector<std::string> & fv) {
 
 int main (int argc, char** argv) {
     auto [inpt, io_time] = Elfperf::execute([&argv](){ return Elfio::read(argv[1]);});
-    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
-    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
+    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1);
+    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1);
 
     Elfreport::report(res1, res2, io_time, p1_time, p2_time);
 
