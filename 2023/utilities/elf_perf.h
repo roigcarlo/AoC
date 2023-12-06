@@ -12,9 +12,6 @@ namespace Elfperf {
 
         auto chron_end = high_resolution_clock::now();
 
-        return std::make_pair(
-            r, 
-            duration_cast<microseconds>(chron_end - chron_beg) / times
-        );
+        return std::make_pair(r, (chron_end - chron_beg) / times);
     }
 }

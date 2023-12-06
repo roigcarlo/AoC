@@ -9,6 +9,7 @@
 
 #include "elf_io.h"
 #include "elf_perf.h"
+#include "elf_report.h"
 
 std::size_t part1(const std::vector<std::string> & fv) {
     std::regex regexp("[0-9]+"); 
@@ -93,9 +94,7 @@ int main (int argc, char** argv) {
     auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
     auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
 
-    std::cout << "I/O   : " << io_time << std::endl;
-    std::cout << "Part 1: " << p1_time << " " << res1 << std::endl;
-    std::cout << "Part 2: " << p2_time << " " << res2 << std::endl;
+    Elfreport::report(res1, res2, io_time, p1_time, p2_time);
 
     return 0;
 }
