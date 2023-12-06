@@ -33,8 +33,8 @@ namespace Elfreport {
         const TRes1 & res1, const TRes2 & res2, 
         const TIoTime & io_time, const TRes1Tme & p1_time, const TRes2Tme & p2_time
     ) {
-        std::cout << "I/O   : " << io_time << std::endl;
-        std::cout << "Part 1: " << cast_time(p1_time) << " " << res1 << std::endl;
-        std::cout << "Part 2: " << cast_time(p2_time) << " " << res2 << std::endl;
+        std::cout << "I/O   : " << cast_time(io_time) << std::endl;
+        std::cout << "Part 1: " << cast_time(p1_time) << "\t" << res1 << std::endl;
+        std::cout << "Part 2: " << cast_time(p2_time) << "\t" << res2 << std::endl;
     }
 }
