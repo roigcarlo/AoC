@@ -1,6 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 
 namespace Elfio {
     enum Mode {

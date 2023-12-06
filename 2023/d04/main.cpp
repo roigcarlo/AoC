@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <ranges>
+#include <numeric>
 #include <algorithm>
 #include <execution>
 #include <string_view>

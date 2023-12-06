@@ -5,10 +5,12 @@
 #include "elf_io.h"
 #include "elf_perf.h"
 
-constexpr std::array<std::string, 9> f_numbers = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
-constexpr std::array<std::string, 9> r_numbers = {"eno", "owt", "eerht", "ruof", "evif", "xis", "neves", "thgie", "enin"};
+using std::operator""sv;
 
-auto find_str_num(const char * buffer, const std::array<std::string, 9> & check_list) {
+constexpr std::array<std::string_view, 9> f_numbers = {"one"sv, "two"sv, "three"sv, "four"sv, "five"sv, "six"sv, "seven"sv, "eight"sv, "nine"sv};
+constexpr std::array<std::string_view, 9> r_numbers = {"eno"sv, "owt"sv, "eerht"sv, "ruof"sv, "evif"sv, "xis"sv, "neves"sv, "thgie"sv, "enin"sv};
+
+auto find_str_num(const char * buffer, const std::array<std::string_view, 9> & check_list) {
     std::string chunk(buffer);
     std::array<uint, 9> found_num;
 
@@ -47,7 +49,7 @@ std::size_t part2(const std::vector<std::string> & fv) {
     thread_local std::array<uint, 9> found_num;
     thread_local char fckelfs[2048];
 
-    auto n_find = [&](const std::string & line, char * buffer, const std::array<std::string, 9> & check_list) -> std::size_t {        
+    auto n_find = [&](const std::string & line, char * buffer, const std::array<std::string_view, 9> & check_list) -> std::size_t {        
         if(!sscanf(line.c_str(), "%[a-z]%1zd", buffer, &f)) { 
             sscanf(line.c_str(), "%1zd", &f);
         } else {

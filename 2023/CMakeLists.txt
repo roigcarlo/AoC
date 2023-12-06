@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 project(AoC2023 CXX)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -fexperimental-library" )
 
 include_directories(utilities)
 
@@ -26,15 +26,18 @@ add_executable(d02 "d02/main.cpp")
 add_executable(d03 "d03/main.cpp")
 add_executable(d04 "d04/main.cpp")
 add_executable(d05 "d05/main.cpp")
+add_executable(d06 "d06/main.cpp")
 
 target_link_libraries(d01 PUBLIC tbb)
 target_link_libraries(d02 PUBLIC tbb)
 target_link_libraries(d03 PUBLIC tbb)
 target_link_libraries(d04 PUBLIC tbb)
 target_link_libraries(d05 PUBLIC tbb)
+target_link_libraries(d06 PUBLIC tbb)
 
 install(TARGETS d01 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d02 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d03 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d04 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d05 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+install(TARGETS d06 DESTINATION "${CMAKE_SOURCE_DIR}/bin")

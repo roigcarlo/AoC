@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <string>
 #include <execution>
+#include <numeric>
 #include <unordered_set>
 #include <unordered_map>
 
