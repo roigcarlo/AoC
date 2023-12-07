@@ -22,7 +22,6 @@ jobs:
         sudo apt-get update
         sudo apt install libtbb-dev 
         sudo apt install libc++-17-dev 
-        sudo apt install libc++abi-17-dev
 
     - name: AoC 2023 - Build
       shell: bash
