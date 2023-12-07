@@ -1,28 +1,19 @@
-#include <cmath>
 #include <cstdio>
-#include <vector>
 #include <string>
 #include <ranges>
 #include <algorithm>
 #include <execution>
-#include <string_view>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
-
-#include <bitset>
-
-using std::operator""sv;
 
 int to_index_table(const char & a) {
     return a >= '0' && a <= '9' ? a - '0' : a - 'A' + 10;
 }
 
 int eval_hand(const std::string_view & hand) {
-    std::vector<std::size_t> reps(16, 0);
+    std::array<std::size_t, 16> reps{};
     int score = 0;
 
     for (const auto & c : hand) {reps[to_index_table(c)]++;}
@@ -36,7 +27,7 @@ int eval_hand(const std::string_view & hand) {
 }
 
 int eval_hand_slow(const std::string_view & hand) {
-    std::vector<std::size_t> reps(16, 0);
+    std::array<std::size_t, 16> reps{};
     int score = 0;
 
     int max_char = 0;
