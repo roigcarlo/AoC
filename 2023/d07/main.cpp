@@ -18,7 +18,7 @@ int eval_hand(const std::string_view & hand) {
 
     for (const auto & c : hand) {reps[to_index_table(c)]++;}
     for (int i = 2; i < 16; i++) {  
-        if(reps[i]) score += (1 << (3 * (reps[i]-1)));
+        if (reps[i]) score += (1 << (3 * (reps[i]-1)));
     }
 
     if (score > 5) score &= 0xFFFFFFF8;
@@ -43,7 +43,7 @@ int eval_hand_slow(const std::string_view & hand) {
 
     for (const auto & c : hand) {if (to_index_table(c) == 1) reps[max_char]++;}
     for (int i = 2; i < 16; i++) {  
-        if(reps[i]) score += (1 << (3 * (reps[i]-1)));
+        if (reps[i]) score += (1 << (3 * (reps[i]-1)));
     }
 
     if (score > 5) score &= 0xFFFFFFF8;
