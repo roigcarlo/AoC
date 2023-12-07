@@ -10,37 +10,40 @@
 #include "elf_perf.h"
 #include "elf_report.h"
 
-std::size_t part1(const std::vector<std::string> & fv) {
-    std::unordered_set symbols{'*', '$', '#', '+', '/', '@', '&', '%', '!', '?', '^', '~', '<', '>', '=', '|', '(', ')', '[', ']', '{', '}', ',', ':', ';', '-', '_', '`', '\'', '"'};
+template<class TFunctor>
+void for_num(const std::vector<std::string> & fv, std::size_t & l, TFunctor && func) {
+    for(
+        auto beg = std::ranges::find_if(fv[l].begin(), fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+             end = std::ranges::find_if(beg+1,         fv[l].end(), [](const auto & e){return !std::isdigit(e);});
+        beg < fv[l].end();
+        beg = std::ranges::find_if(end+1, fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
+        end = std::ranges::find_if(beg+1, fv[l].end(), [](const auto & e){return !std::isdigit(e);})
+    ) {
+        func(fv, l, beg, end);
+    }
+}
 
+std::size_t part1(const std::vector<std::string> & fv) {
     std::size_t r = 0;
+
+    auto is_symbol = [](const auto & c) { return c != '.' && !std::isdigit(c); };
+
     for(std::size_t l = 0; l < fv.size(); l++) {
-        for(
-            auto beg = std::ranges::find_if(fv[l].begin(), fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
-                 end = std::ranges::find_if(beg+1,         fv[l].end(), [](const auto & e){return !std::isdigit(e);});
-            beg < fv[l].end();
-            beg = std::ranges::find_if(end+1, fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
-            end = std::ranges::find_if(beg+1, fv[l].end(), [](const auto & e){return !std::isdigit(e);})
-        ) {
+        for_num(fv, l, [&r, &is_symbol]<class TIter>(const std::vector<std::string> & fv, std::size_t & l, const TIter & beg, const TIter & end) {
             int mp = beg - fv[l].begin();
             int ms = std::stoi(std::string(beg, end));
 
             auto back = std::max(mp - 1, 0);
             auto forw = std::min(mp + static_cast<unsigned long>(std::abs(std::distance(beg, end))) + 1, fv[l].size());
 
-            if (back > 0 && symbols.contains(fv[l][back])) {
+            if (   (back > 0 && is_symbol(fv[l][back]))
+                || (forw < (fv[l].size() - 1) && is_symbol(fv[l][forw-1]))
+                || (l > 0           && std::any_of(fv[l-1].begin()+back, fv[l-1].begin()+forw, [&is_symbol](const auto & c){return is_symbol(c);}))
+                || (l < fv.size()-1 && std::any_of(fv[l+1].begin()+back, fv[l+1].begin()+forw, [&is_symbol](const auto & c){return is_symbol(c);}))
+            ) {
                 r += ms;
             }
-            else if (forw < (fv[l].size() - 1) && symbols.contains(fv[l][forw-1])) {
-                r += ms;
-            }
-            else if (l > 0 && std::any_of(fv[l-1].begin()+back, fv[l-1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
-                r += ms;
-            }
-            else if (l < fv.size()-1 && std::any_of(fv[l+1].begin()+back, fv[l+1].begin()+forw, [&symbols](const auto & e){return symbols.contains(e);})) {
-                r += ms;
-            }
-        }
+        });
     }
 
     return r;
@@ -50,13 +53,7 @@ std::size_t part2(const std::vector<std::string> & fv) {
     std::unordered_map<int,std::unordered_set<int>> gears;
 
     for(std::size_t l = 0; l < fv.size(); l++) {
-        for(
-            auto beg = std::ranges::find_if(fv[l].begin(), fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
-                 end = std::ranges::find_if(beg+1,         fv[l].end(), [](const auto & e){return !std::isdigit(e);});
-            beg < fv[l].end();
-            beg = std::ranges::find_if(end+1, fv[l].end(), [](const auto & e){return  std::isdigit(e);}), 
-            end = std::ranges::find_if(beg+1, fv[l].end(), [](const auto & e){return !std::isdigit(e);})
-        ) {
+        for_num(fv, l, [&gears]<class TIter>(const std::vector<std::string> & fv, std::size_t & l, const TIter & beg, const TIter & end) {
             int mp = beg - fv[l].begin();
             int ms = std::stoi(std::string(beg, end));
 
@@ -83,24 +80,18 @@ std::size_t part2(const std::vector<std::string> & fv) {
                     }
                 }
             }
-        }
+        });
     }
 
-    auto r = std::transform_reduce(gears.begin(), gears.end(), 0, std::plus<int>{}, [](const auto & e) {
-        if (std::get<1>(e).size() == 2) {
-            return std::transform_reduce(std::get<1>(e).begin(), std::get<1>(e).end(), 1, std::multiplies<int>{}, [](const auto & g) { return g; });
-        } else {
-            return 0;
-        }
+    return std::transform_reduce(gears.begin(), gears.end(), 0, std::plus<int>{}, [](const auto & e) {
+        return (std::get<1>(e).size() == 2) * std::transform_reduce(std::get<1>(e).begin(), std::get<1>(e).end(), 1, std::multiplies<int>{}, [](const auto & g) { return g; });
     });
-
-    return r;
 }
 
 int main (int argc, char** argv) {
     auto [inpt, io_time] = Elfperf::execute([&argv](){ return Elfio::read(argv[1]);});
-    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1);
-    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1);
+    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
+    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
 
     Elfreport::report(res1, res2, io_time, p1_time, p2_time);
 
