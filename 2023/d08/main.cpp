@@ -4,7 +4,6 @@
 #include <numeric>
 #include <algorithm>
 #include <execution>
-#include <unordered_set>
 
 #include "elf_io.h"
 #include "elf_perf.h"
@@ -70,14 +69,12 @@ std::size_t part2(const std::vector<std::string> & fv) {
         auto cur = to_key(std::get<0>(v));
 
         std::size_t steps = 0;
-        std::unordered_set<std::size_t> chk{};
         
-        while (chk.size() != 2) {
+        while (!emap[cur]) {
             cur = *(route.cbegin() + (steps++ % route_size)) == 'L' ? lmap[cur] : rmap[cur];
-            if (emap[cur] && chk.size() < 2) chk.insert(steps);
         }
 
-        return *std::next(chk.begin(), 0) - *std::next(chk.begin(), 1);
+        return steps;
     };
 
     auto cycles = map | std::views::filter([&](const auto & v) { return std::get<0>(v)[2] == 'A'; })     
