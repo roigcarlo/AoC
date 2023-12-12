@@ -1,0 +1,6 @@
+{
+	"name": "AoC-2023",
+	"build": {
+		"dockerfile": "Dockerfile"
+	}
+}
