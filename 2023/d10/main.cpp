@@ -278,8 +278,8 @@ int part2(const std::vector<std::string> & fv) {
 
 int main (int argc, char** argv) {
     auto [inpt, io_time] = Elfperf::execute([&argv](){ return Elfio::read(argv[1]);});
-    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1);
-    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1);
+    auto [res1, p1_time] = Elfperf::execute([&inpt](){ return part1(inpt); }, 1000);
+    auto [res2, p2_time] = Elfperf::execute([&inpt](){ return part2(inpt); }, 1000);
 
     Elfreport::report(res1, res2, io_time, p1_time, p2_time);
 
