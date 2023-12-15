@@ -1,13 +1,16 @@
 #include <cstdio>
-#include <ranges>
 #include <string>
 #include <algorithm>
 #include <execution>
 #include <unordered_map>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
+
+using namespace ranges;
 
 constexpr int RGB_R = 0;
 constexpr int RGB_G = 1;

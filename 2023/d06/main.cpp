@@ -2,16 +2,18 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-#include <ranges>
 #include <algorithm>
 #include <execution>
 #include <string_view>
 #include <unordered_set>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
 
+using namespace ranges;
 using std::operator""sv;
 
 long solve(long t, long d) {
@@ -29,15 +31,15 @@ std::size_t part1(const std::vector<std::string> & fv) {
     std::string dists = fv[1];
     
     auto as_list = [](std::string & s) {
-        return s | std::views::split(" "sv) 
-                 | std::ranges::views::drop(1)
-                 | std::views::transform([](const auto & v) { return std::string(std::string_view(v.begin(), v.end()));})
-                 | std::views::filter([](const auto & sv){return sv != ""sv;})
-                 | std::views::transform([](const auto & v) { return std::stoi(v);})
+        return s | views::split(" "sv) 
+                 | views::drop(1)
+                 | views::transform([](const auto & v) { return v | to<std::string>;})
+                 | views::filter([](const auto & sv){return sv != ""sv;})
+                 | views::transform([](const auto & v) { return std::stoi(v);})
                  ;
     };
 
-    auto race_view = std::ranges::views::zip(as_list(times), as_list(dists));
+    auto race_view = views::zip(as_list(times), as_list(dists));
 
     return std::transform_reduce(
         race_view.begin(), race_view.end(),
@@ -54,13 +56,13 @@ std::size_t part2(const std::vector<std::string> & fv) {
     
     auto as_nmbr = [](std::string & s) {
         s.erase(std::remove_if(s.begin(), s.end(), [](unsigned char x) { return std::isspace(x); }), s.end());
-        return s | std::views::split(":"sv)
-                 | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v)));})
-                 | std::ranges::views::drop(1)
+        return s | views::split(":"sv)
+                 | views::transform([](const auto & v) { return std::stol(v | to<std::string>());})
+                 | views::drop(1)
                  ;
     };
 
-    const auto & [t, d] = std::ranges::views::zip(as_nmbr(times), as_nmbr(dists)).front();
+    const auto & [t, d] = views::zip(as_nmbr(times), as_nmbr(dists)).front();
 
     return solve(t,d);
 }

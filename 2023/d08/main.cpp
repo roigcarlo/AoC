@@ -1,13 +1,16 @@
 #include <cstdio>
 #include <string>
-#include <ranges>
 #include <numeric>
 #include <algorithm>
 #include <execution>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
+
+using namespace ranges;
 
 std::size_t to_key(const std::string_view & sv) {
     return (sv[0] - 'A') * 26 * 26 + (sv[1] - 'A') * 26 + (sv[2] - 'A');
@@ -17,15 +20,15 @@ std::size_t part1(const std::vector<std::string> & fv) {
     std::array<std::size_t, 17576> lmap{};
     std::array<std::size_t, 17576> rmap{};
     
-    auto map = fv | std::views::drop(1) | std::views::transform([](const std::string & s) { 
+    auto map = fv | views::drop(1) | views::transform([](const std::string & s) { 
         return std::make_tuple(
-            std::string_view(s.begin() +  0, s.begin() +  3),
-            std::string_view(s.begin() +  7, s.begin() + 10),
-            std::string_view(s.begin() + 12, s.begin() + 15)
+            std::string_view(&*(s.begin()) +  0, 3),
+            std::string_view(&*(s.begin()) +  7, 3),
+            std::string_view(&*(s.begin()) + 12, 3)
         ); 
     });
 
-    std::ranges::for_each(map, [&lmap, &rmap](const auto & v) {
+    for_each(map, [&lmap, &rmap](const auto & v) {
         lmap[to_key(std::get<0>(v))] = to_key(std::get<1>(v));
         rmap[to_key(std::get<0>(v))] = to_key(std::get<2>(v));
     });
@@ -49,15 +52,15 @@ std::size_t part2(const std::vector<std::string> & fv) {
     std::array<std::size_t, 17576> rmap{};
     std::array<std::size_t, 17576> emap{};
 
-    auto map = fv | std::views::drop(1) | std::views::transform([](const std::string & s) { 
+    auto map = fv | views::drop(1) | views::transform([](const std::string & s) { 
         return std::make_tuple(
-            std::string_view(s.begin() +  0, s.begin() +  3),
-            std::string_view(s.begin() +  7, s.begin() + 10),
-            std::string_view(s.begin() + 12, s.begin() + 15)
+            std::string_view(&*(s.begin()) +  0, 3),
+            std::string_view(&*(s.begin()) +  7, 3),
+            std::string_view(&*(s.begin()) + 12, 3)
         ); 
     });
 
-    std::ranges::for_each(map, [&lmap, &rmap, &emap](const auto & v) {
+    for_each(map, [&lmap, &rmap, &emap](const auto & v) {
         lmap[to_key(std::get<0>(v))] = to_key(std::get<1>(v));
         rmap[to_key(std::get<0>(v))] = to_key(std::get<2>(v));
         emap[to_key(std::get<0>(v))] = std::get<0>(v)[2] == 'Z';
@@ -66,13 +69,13 @@ std::size_t part2(const std::vector<std::string> & fv) {
     auto route = std::string_view(fv[0]);
     auto route_size = route.size();
     auto calc_cycle = [&](auto cur) { 
-        return 2 + *(std::views::iota(0) | std::views::take_while([&](const auto & i) { 
+        return 2 + *(views::iota(0) | views::take_while([&](const auto & i) { 
             return !emap[cur = *(route.cbegin() + (i % route_size)) == 'L' ? lmap[cur] : rmap[cur]];
-        }) | std::views::reverse).begin();
+        }) | views::reverse).begin();
     };
 
-    auto cycles = map | std::views::filter([&](const auto & v) { return std::get<0>(v)[2] == 'A'; })     
-                      | std::views::transform([&](const auto & v){ return calc_cycle(to_key(std::get<0>(v))); });
+    auto cycles = map | views::filter([&](const auto & v) { return std::get<0>(v)[2] == 'A'; })     
+                      | views::transform([&](const auto & v){ return calc_cycle(to_key(std::get<0>(v))); });
 
     return std::accumulate(cycles.begin(), cycles.end(), static_cast<std::size_t>(1), std::lcm<std::size_t, std::size_t>);
 }

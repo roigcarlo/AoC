@@ -1,12 +1,15 @@
 #include <cstdio>
 #include <string>
-#include <ranges>
 #include <algorithm>
 #include <execution>
+
+#include <range/v3/all.hpp>
 
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
+
+using namespace ranges;
 
 int to_index_table(const char & a) {
     return a >= '0' && a <= '9' ? a - '0' : a - 'A' + 10;
@@ -56,7 +59,7 @@ bool sort_game(const std::tuple<std::string, int, int> & a, const std::tuple<std
 }
 
 std::size_t part1(const std::vector<std::string> & fv) {
-    auto game_view = fv | std::views::transform([](const std::string & s) { 
+    auto game_view = fv | views::transform([](const std::string & s) { 
         auto split = s.begin() + 5;
         auto hnd = std::string(s.begin(), split);
 
@@ -69,7 +72,7 @@ std::size_t part1(const std::vector<std::string> & fv) {
         auto bet = std::stoi(std::string(split + 1, s.end()));
 
         return std::make_tuple(hnd, bet, 0); 
-    }) | std::ranges::to<std::vector>();
+    }) | to<std::vector>();
 
     std::for_each(
         std::execution::par_unseq,
@@ -81,7 +84,7 @@ std::size_t part1(const std::vector<std::string> & fv) {
 
     std::sort(std::execution::par_unseq, game_view.begin(), game_view.end(), sort_game);
 
-    auto game_rank = std::ranges::views::zip(std::views::iota(1) | std::views::take(game_view.size()) | std::ranges::to<std::vector>(), game_view);
+    auto game_rank = views::enumerate(game_view) | to<std::vector>();
 
     return std::transform_reduce(
         std::execution::par_unseq,
@@ -93,7 +96,7 @@ std::size_t part1(const std::vector<std::string> & fv) {
 }
 
 std::size_t part2(const std::vector<std::string> & fv) {
-    auto game_view = fv | std::views::transform([](const std::string & s) { 
+    auto game_view = fv | views::transform([](const std::string & s) { 
         auto split = s.begin() + 5;
         auto hnd = std::string(s.begin(), split);
 
@@ -106,7 +109,7 @@ std::size_t part2(const std::vector<std::string> & fv) {
         auto bet = std::stoi(std::string(split + 1, s.end()));
 
         return std::make_tuple(hnd, bet, 0); 
-    }) | std::ranges::to<std::vector>();
+    }) | to<std::vector>();
 
     std::for_each(
         std::execution::par_unseq,
@@ -118,7 +121,7 @@ std::size_t part2(const std::vector<std::string> & fv) {
 
     std::sort(std::execution::par_unseq, game_view.begin(), game_view.end(), sort_game);
 
-    auto game_rank = std::ranges::views::zip(std::views::iota(1) | std::views::take(game_view.size()) | std::ranges::to<std::vector>(), game_view);
+    auto game_rank = views::enumerate(game_view) | to<std::vector>();;
 
     return std::transform_reduce(
         std::execution::par_unseq,

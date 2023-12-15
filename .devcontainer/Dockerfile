@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Dependencies
 RUN apt-get update \
- && apt-get install -y lsb-release wget software-properties-common gnupg git build-essential libtool autoconf unzip libssl-dev
+ && apt-get install -y lsb-release wget software-properties-common gnupg git build-essential libtool autoconf unzip libssl-dev librange-v3-dev
 
 # CMAKE
 RUN wget https://cmake.org/files/v3.27/cmake-3.27.9.tar.gz \

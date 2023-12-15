@@ -3,23 +3,9 @@ cmake_minimum_required(VERSION 3.25)
 project(AoC2023 CXX)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -fexperimental-library" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
 include_directories(utilities)
-
-# set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
-# set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "aa1f7df0-828a-4fcd-9afc-2dc80491aca7")
-
-# set(CMAKE_CXX_EXTENSIONS OFF)
-
-# add_library(test_module)
-# target_sources(test_module
-#   PUBLIC
-#     FILE_SET cxx_modules TYPE CXX_MODULES FILES
-#     "modules/test_module.cpp"
-# )
-
-# add_executable(TestModules "test/test.cpp")
 
 add_executable(d01 "d01/main.cpp")
 add_executable(d02 "d02/main.cpp")
@@ -32,6 +18,10 @@ add_executable(d08 "d08/main.cpp")
 add_executable(d09 "d09/main.cpp")
 add_executable(d10 "d10/main.cpp")
 add_executable(d11 "d11/main.cpp")
+# add_executable(d12 "d12/main.cpp")
+# add_executable(d13 "d13/main.cpp")
+# add_executable(d14 "d14/main.cpp")
+# add_executable(d15 "d15/main.cpp")
 
 target_link_libraries(d01 PUBLIC tbb)
 target_link_libraries(d02 PUBLIC tbb)
@@ -44,6 +34,10 @@ target_link_libraries(d08 PUBLIC tbb)
 target_link_libraries(d09 PUBLIC tbb)
 target_link_libraries(d10 PUBLIC tbb)
 target_link_libraries(d11 PUBLIC tbb)
+# target_link_libraries(d12 PUBLIC tbb)
+# target_link_libraries(d13 PUBLIC tbb)
+# target_link_libraries(d14 PUBLIC tbb)
+# target_link_libraries(d15 PUBLIC tbb)
 
 install(TARGETS d01 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d02 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
@@ -56,3 +50,7 @@ install(TARGETS d08 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d09 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d10 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 install(TARGETS d11 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+# install(TARGETS d12 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+# install(TARGETS d13 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+# install(TARGETS d14 DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+# install(TARGETS d15 DESTINATION "${CMAKE_SOURCE_DIR}/bin")

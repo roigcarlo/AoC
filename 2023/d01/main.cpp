@@ -2,10 +2,13 @@
 #include <algorithm>
 #include <execution>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
 
+using namespace ranges;
 using std::operator""sv;
 
 constexpr std::array<std::string_view, 9> f_numbers = {"one"sv, "two"sv, "three"sv, "four"sv, "five"sv, "six"sv, "seven"sv, "eight"sv, "nine"sv};
@@ -15,7 +18,7 @@ auto find_str_num(const char * buffer, const std::array<std::string_view, 9> & c
     std::string chunk(buffer);
     std::array<uint, 9> found_num;
 
-    std::ranges::generate(found_num.begin(), found_num.end(), [&,n{0}]() mutable {return uint(chunk.find(check_list[n++]));});
+    ranges::generate(found_num.begin(), found_num.end(), [&,n{0}]() mutable {return uint(chunk.find(check_list[n++]));});
 
     return std::make_tuple(std::min_element(found_num.begin(), found_num.end()) - found_num.begin(), std::move(found_num));
 }

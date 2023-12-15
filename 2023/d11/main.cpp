@@ -1,15 +1,17 @@
-#include <queue>
+#include <set>
 #include <cstdio>
 #include <string>
-#include <ranges>
 #include <numeric>
 #include <algorithm>
 #include <execution>
-#include <set>
+
+#include <range/v3/all.hpp>
 
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
+
+using namespace ranges;
 
 std::size_t part1(const std::vector<std::string> & fv) {
     std::set<int> non_void_x;

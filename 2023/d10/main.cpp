@@ -1,16 +1,19 @@
 #include <queue>
 #include <cstdio>
 #include <string>
-#include <ranges>
 #include <numeric>
 #include <algorithm>
 #include <execution>
 #include <unordered_map>
 #include <unordered_set>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
+
+using namespace ranges;
 
 int to_key(const char & a) {
     switch(a) {
@@ -74,11 +77,11 @@ std::size_t clusterize(auto & maze, int c, int x, int y) {
 }
 
 std::size_t part1(const std::vector<std::string> & fv) {
-    auto maze = fv | std::views::transform([](const auto & l) { 
-        return l | std::views::transform([](const auto & v) { 
+    auto maze = fv | views::transform([](const auto & l) { 
+        return l | views::transform([](const auto & v) { 
                 return to_key(v);
-        }) | std::ranges::to<std::vector>(); })
-    | std::ranges::to<std::vector>();
+        }) | to<std::vector>(); })
+    | to<std::vector>();
 
     // Get Starting point
     std::pair<int, int> pbeg{-1,-1};
@@ -125,11 +128,11 @@ std::size_t part1(const std::vector<std::string> & fv) {
 }
 
 int part2(const std::vector<std::string> & fv) {
-    auto maze = fv | std::views::transform([](const auto & l) { 
-        return l | std::views::transform([](const auto & v) { 
+    auto maze = fv | views::transform([](const auto & l) { 
+        return l | views::transform([](const auto & v) { 
                 return to_key(v);
-        }) | std::ranges::to<std::vector>(); })
-    | std::ranges::to<std::vector>();
+        }) | to<std::vector>(); })
+    | to<std::vector>();
 
     // Get Starting point
     std::pair<int, int> pbeg{-1,-1};

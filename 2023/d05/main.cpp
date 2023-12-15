@@ -2,27 +2,29 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-#include <ranges>
 #include <algorithm>
 #include <execution>
 #include <string_view>
 #include <unordered_set>
 
+#include <range/v3/all.hpp>
+
 #include "elf_io.h"
 #include "elf_perf.h"
 #include "elf_report.h"
 
+using namespace ranges;
 using std::operator""sv;
 
 auto build_farm(const std::vector<std::string> & fv) {
-    auto reversed = fv | std::ranges::views::drop(2);
+    auto reversed = fv | views::drop(3);
 
     std::size_t level = 0;
     std::vector<std::vector<std::tuple<long, long, long>>> farm(7);
 
     long dst, src, lng;
     for (auto & x : reversed) {
-        auto xr = x | std::views::reverse;
+        auto xr = x | views::reverse;
 
         if (xr[0] == ':') {
             level++;
@@ -114,9 +116,9 @@ long traverse_farm_range(int level, std::pair<long, long> v, const TFarm & farm)
 std::size_t part1(const std::vector<std::string> & fv) {
     auto farm = build_farm(fv);
     auto seeds_view = fv[0] 
-                    | std::views::split(" "sv) 
-                    | std::ranges::views::drop(1) 
-                    | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
+                    | views::split(" "sv) 
+                    | views::drop(1) 
+                    | views::transform([](const auto & v) { return std::stol( v | to<std::string>()); });
 
     std::vector<long> seeds;
     std::copy(
@@ -137,9 +139,9 @@ std::size_t part1(const std::vector<std::string> & fv) {
 std::size_t part2(const std::vector<std::string> & fv) {
     auto farm = build_farm(fv);
     auto seeds_view = fv[0] 
-                    | std::views::split(" "sv) 
-                    | std::ranges::views::drop(1) 
-                    | std::views::transform([](const auto & v) { return std::stol(std::string(std::string_view(v.begin(), v.end()))); });
+                    | views::split(" "sv) 
+                    | views::drop(1) 
+                    | views::transform([](const auto & v) { return std::stol( v | to<std::string>()); });
 
     std::vector<long> seeds;
     std::copy(

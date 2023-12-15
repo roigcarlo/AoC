@@ -22,17 +22,17 @@ namespace Elfio {
 
     auto read(char * filename, Mode snow_flaks = Mode::Stnd) {
         std::fstream file(filename);
+
+        std::string cline;
         std::vector<std::string> lines;
 
-        if(snow_flaks && Mode::Snow) {
-            file.imbue(std::locale(file.getloc(), new csv_whitespace));
-        }
+        // if(snow_flaks && Mode::Snow) {
+        //     file.imbue(std::locale(file.getloc(), new csv_whitespace));
+        // }
 
-        std::copy(
-            std::istream_iterator<std::string>(file),
-            std::istream_iterator<std::string>(),
-            std::back_inserter(lines)
-        );
+        while(std::getline(file, cline)) {
+            lines.emplace_back(cline);
+         }
 
         return std::move(lines);
     }
