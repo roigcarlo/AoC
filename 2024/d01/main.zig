@@ -1,18 +1,11 @@
 const std = @import("std");
-const print = std.debug.print;
+const cleanLine = @import("utils").cleanLine;
 
-// Prevent the last char from corrupting the num. Probably much cleaner ways to do this.
-fn cleanLine(line: []u8) ![]const u8 {
-    if (@import("builtin").os.tag == .windows) {
-        return std.mem.trimRight(u8, line, "\r");
-    } else {
-        return line;
-    }
-}
+const print = std.debug.print;
 
 test "part 1" {
     // Read a file
-    var file = try std.fs.cwd().openFile("data", .{});
+    var file = try std.fs.cwd().openFile("d01/data", .{});
     defer file.close();
 
     var buffered = std.io.bufferedReader(file.reader());
@@ -52,7 +45,7 @@ test "part 1" {
 
 test "part 2" {
     // Read a file
-    var file = try std.fs.cwd().openFile("data", .{});
+    var file = try std.fs.cwd().openFile("d01/data", .{});
     defer file.close();
 
     var buffered = std.io.bufferedReader(file.reader());
