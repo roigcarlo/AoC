@@ -14,4 +14,8 @@ Cargo.lock
 2023/bin/*
 2023/build-local.sh
 
+# Zig Zig
+**/.zig-cache/
+**/zig-out/
+
 .vscode
