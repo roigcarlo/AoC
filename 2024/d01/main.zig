@@ -3,7 +3,7 @@ const cleanLine = @import("utils").cleanLine;
 
 const print = std.debug.print;
 
-test "part 1" {
+test "Day 01 part 01" {
     // Read a file
     var file = try std.fs.cwd().openFile("d01/data", .{});
     defer file.close();
@@ -43,7 +43,7 @@ test "part 1" {
     try std.testing.expectEqual(sum, @as(i32, 765748));
 }
 
-test "part 2" {
+test "Day 01 part 02" {
     // Read a file
     var file = try std.fs.cwd().openFile("d01/data", .{});
     defer file.close();
